@@ -73,6 +73,16 @@ export const ru = {
   'sources.pending': 'Не выполнена',
   'sources.passed': 'Пройдена',
   'sources.failed': 'Не пройдена',
+  'calendar.title': 'Календарь стартов',
+  'calendar.date': 'Дата старта (UTC)',
+  'calendar.ok': 'запас {margin} п. п.',
+  'calendar.failBattery': 'отказ батареи, час {hour}',
+  'calendar.failEarth': 'нет связи, час {hour}',
+  'calendar.unavailable': 'нет данных',
+  'calendar.empty': 'Календарь появится после первого расчёта',
+  'calendar.running': 'Считаем календарь…',
+  'calendar.stale': 'Пересчёт под новый план…',
+  'calendar.error': 'Календарь не посчитан: план содержит ошибку',
 } as const;
 
 export type MessageKey = keyof typeof ru;
