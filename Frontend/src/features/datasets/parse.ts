@@ -44,6 +44,21 @@ const siteSchema = z
         }
       }
     }
+    if (site.horizonByMast) {
+      const chain = [site.horizon, site.horizonByMast['5'], site.horizonByMast['10']];
+      (['5', '10'] as const).forEach((mast, step) => {
+        const lower = chain[step + 1]!;
+        const higher = chain[step]!;
+        const index = lower.findIndex((value, i) => value > (higher[i] ?? Infinity) + 1e-9);
+        if (index >= 0) {
+          ctx.addIssue({
+            code: 'custom',
+            path: ['horizonByMast', mast, index],
+            message: 'a taller mast must not raise the horizon',
+          });
+        }
+      });
+    }
     site.horizonClones?.forEach((clone, index) => {
       if (clone.length !== length) {
         ctx.addIssue({

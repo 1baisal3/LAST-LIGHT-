@@ -30,6 +30,19 @@ describe('parseDataset', () => {
     expect(() => parseDataset(broken(withMastProfiles))).not.toThrow();
   });
 
+  it('rejects a taller mast that raises the horizon anywhere', () => {
+    const raised = broken((dataset) => {
+      const site = dataset.sites.sites[1]!;
+      site.horizonByMast = { '5': [...site.horizon], '10': site.horizon.map((value, i) => (i === 7 ? value + 1 : value)) };
+    });
+    expect(() => parseDataset(raised)).toThrow('horizonByMast.10[7]: a taller mast');
+    const fiveAboveTwo = broken((dataset) => {
+      const site = dataset.sites.sites[1]!;
+      site.horizonByMast = { '5': site.horizon.map((value, i) => (i === 4 ? value + 1 : value)), '10': [...site.horizon] };
+    });
+    expect(() => parseDataset(fiveAboveTwo)).toThrow('horizonByMast.5[4]: a taller mast');
+  });
+
   it('accepts mode final and a passed check with ranAt', () => {
     const raw = broken((d) => {
       d.mode = 'final';
