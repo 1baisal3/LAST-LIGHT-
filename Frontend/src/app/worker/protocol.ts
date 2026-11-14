@@ -2,7 +2,7 @@ import type { Dataset } from '../../features/datasets/types';
 import type { PlanError } from '../../sim/validatePlan';
 import type { Plan } from '../../sim/types';
 
-export type Task = 'loadDataset' | 'simulate' | 'findNearestStart' | 'calendar' | 'minCapacity' | 'maxHeater';
+export type Task = 'loadDataset' | 'simulate' | 'findNearestStart' | 'calendar' | 'minCapacity' | 'maxHeater' | 'mastOptions' | 'uncertainty';
 
 export interface WorkerRequest {
   requestId: number;

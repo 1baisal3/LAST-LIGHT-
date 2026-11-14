@@ -8,6 +8,14 @@ import {
   capacityStarted,
 } from '../features/fix/capacitySlice';
 import { datasetActivated, type DatasetState } from '../features/datasets/datasetSlice';
+import { mastFailed, mastReceived, mastRejected, mastSearchRequested, mastStarted } from '../features/fix/mastSlice';
+import {
+  uncertaintyFailed,
+  uncertaintyReceived,
+  uncertaintyRejected,
+  uncertaintyRequested,
+  uncertaintyStarted,
+} from '../features/fix/uncertaintySlice';
 import {
   heaterFailed,
   heaterReceived,
@@ -33,9 +41,11 @@ import {
 import { playStopped } from '../features/timeline/viewSlice';
 import type { CapacityAnswer } from '../sim/capacity';
 import type { HeaterAnswer } from '../sim/heater';
+import type { MastResult } from '../sim/mast';
+import type { Uncertainty } from '../sim/uncertainty';
 import type { CalendarCell } from '../sim/search';
 import type { Result } from '../sim/types';
-import { validatePlan } from '../sim/validatePlan';
+import { validatePlan, type PlanError } from '../sim/validatePlan';
 import type { SimClient } from './worker/client';
 import type { WorkerResponse, Task } from './worker/protocol';
 
@@ -140,6 +150,28 @@ export function runHeater(api: SimApi, client: SimClient): void {
   });
 }
 
+function startTask(
+  api: SimApi,
+  client: SimClient,
+  task: 'mastOptions' | 'uncertainty',
+  started: (ticket: { revision: number; datasetId: string }) => { type: string },
+  rejected: (payload: { revision: number; datasetId: string; error: PlanError }) => { type: string },
+): void {
+  const { plan: planState, dataset: datasetState } = stateOf(api);
+  const dataset = datasetState.dataset;
+  if (!dataset) return;
+
+  const ticket = { revision: planState.revision, datasetId: dataset.datasetId };
+  const error = validatePlan(planState.plan, dataset.sites, dataset.provenance.capabilities);
+  if (error) {
+    api.dispatch(rejected({ ...ticket, error }));
+    return;
+  }
+
+  api.dispatch(started(ticket));
+  client.send({ planRevision: ticket.revision, datasetId: ticket.datasetId, task, payload: planState.plan });
+}
+
 export function calendarKey(plan: SimState['plan']['plan']): string {
   const { siteId: _siteId, startIndex: _startIndex, ...rest } = plan;
   return JSON.stringify(rest);
@@ -202,6 +234,24 @@ export function routeResponse(dispatch: SimApi['dispatch']) {
       return;
     }
 
+    if (task === 'mastOptions') {
+      if (response.status === 'ok') {
+        dispatch(mastReceived({ ...ticket, options: response.payload as MastResult[] }));
+      } else if (response.error) {
+        dispatch(mastFailed({ ...ticket, error: response.error }));
+      }
+      return;
+    }
+
+    if (task === 'uncertainty') {
+      if (response.status === 'ok') {
+        dispatch(uncertaintyReceived({ ...ticket, answer: (response.payload ?? null) as Uncertainty | null }));
+      } else if (response.error) {
+        dispatch(uncertaintyFailed({ ...ticket, error: response.error }));
+      }
+      return;
+    }
+
     if (task === 'maxHeater') {
       if (response.status === 'ok') {
         dispatch(heaterReceived({ ...ticket, answer: response.payload as HeaterAnswer }));
@@ -246,6 +296,20 @@ export function routeResponse(dispatch: SimApi['dispatch']) {
 
 export function createSimListener(client: SimClient) {
   const middleware = createListenerMiddleware();
+
+  middleware.startListening({
+    actionCreator: mastSearchRequested,
+    effect: (_action, api) => {
+      startTask(api, client, 'mastOptions', mastStarted, mastRejected);
+    },
+  });
+
+  middleware.startListening({
+    actionCreator: uncertaintyRequested,
+    effect: (_action, api) => {
+      startTask(api, client, 'uncertainty', uncertaintyStarted, uncertaintyRejected);
+    },
+  });
 
   middleware.startListening({
     actionCreator: heaterSearchRequested,

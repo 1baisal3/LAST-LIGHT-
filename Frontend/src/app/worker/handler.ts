@@ -1,6 +1,8 @@
 import type { Dataset } from '../../features/datasets/types';
 import { minCapacityFor } from '../../sim/capacity';
 import { maxHeaterFor } from '../../sim/heater';
+import { mastOptions } from '../../sim/mast';
+import { uncertainty } from '../../sim/uncertainty';
 import { calendar, findNearestStart } from '../../sim/search';
 import { simulateWithMasks } from '../../sim/simulate';
 import { earthMask, litMask } from '../../sim/masks';
@@ -111,6 +113,23 @@ export function createHandler(): (request: WorkerRequest) => WorkerResponse {
             };
           }
           return { ...base, status: 'ok', payload: maxHeaterFor(prepared.site, prepared.plan) };
+        }
+        case 'mastOptions': {
+          const prepared = prepare(request);
+          if ('code' in prepared) return { ...base, status: 'error', error: prepared };
+          return { ...base, status: 'ok', payload: mastOptions(prepared.site, prepared.plan) };
+        }
+        case 'uncertainty': {
+          const prepared = prepare(request);
+          if ('code' in prepared) return { ...base, status: 'error', error: prepared };
+          if (!dataset!.provenance.capabilities.uncertainty) {
+            return {
+              ...base,
+              status: 'error',
+              error: failure('uncertainty is not available for this dataset', 'FEATURE_UNAVAILABLE'),
+            };
+          }
+          return { ...base, status: 'ok', payload: uncertainty(prepared.site, prepared.plan) };
         }
         case 'calendar': {
           const prepared = prepare(request);

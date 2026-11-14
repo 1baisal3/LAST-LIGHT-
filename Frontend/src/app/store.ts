@@ -5,6 +5,8 @@ import { datasetReducer } from '../features/datasets/datasetSlice';
 import { capacityReducer } from '../features/fix/capacitySlice';
 import { fixReducer } from '../features/fix/fixSlice';
 import { heaterReducer } from '../features/fix/heaterSlice';
+import { mastReducer } from '../features/fix/mastSlice';
+import { uncertaintyReducer } from '../features/fix/uncertaintySlice';
 import { planReducer } from '../features/plan/planSlice';
 import { resultReducer } from '../features/result/resultSlice';
 import { viewReducer } from '../features/timeline/viewSlice';
@@ -22,6 +24,8 @@ export function makeStore(client: SimClient = createSimClient()) {
       fix: fixReducer,
       capacity: capacityReducer,
       heater: heaterReducer,
+      mast: mastReducer,
+      uncertainty: uncertaintyReducer,
       plan: planReducer,
       result: resultReducer,
       view: viewReducer,
