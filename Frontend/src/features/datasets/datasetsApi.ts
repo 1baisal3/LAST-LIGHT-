@@ -1,18 +1,12 @@
 import { baseApi } from '../../shared/api/baseApi';
-import type { SitesFile } from '../../sim/types';
-
-export interface DatasetResponse {
-  datasetId: string;
-  mode: 'demo' | 'final';
-  sites: SitesFile;
-  provenance: unknown;
-  validation: unknown;
-}
+import { parseDataset } from './parse';
+import type { Dataset } from './types';
 
 export const datasetsApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
-    getLatestDataset: build.query<DatasetResponse, void>({
+    getLatestDataset: build.query<Dataset, void>({
       query: () => '/datasets/latest/',
+      transformResponse: (raw: unknown): Dataset => parseDataset(raw),
       providesTags: ['Dataset'],
     }),
   }),
