@@ -1,0 +1,153 @@
+.horizon {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-3);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.title {
+  margin: 0;
+  font-size: 15px;
+}
+
+.muted {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 12px;
+}
+
+.toggle {
+  min-height: 32px;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-muted);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.toggle:focus-visible,
+.chart:focus-visible {
+  outline: 2px solid var(--color-sun);
+  outline-offset: 2px;
+}
+
+.chart {
+  display: block;
+  width: 100%;
+  height: auto;
+  touch-action: pan-y;
+}
+
+.grid {
+  stroke: var(--color-muted);
+  stroke-opacity: 0.25;
+  stroke-width: 1;
+}
+
+.zero {
+  stroke: var(--color-muted);
+  stroke-opacity: 0.7;
+  stroke-width: 1;
+}
+
+.tick {
+  fill: var(--color-muted);
+  font-family: var(--font-num);
+  font-size: 11px;
+}
+
+.terrain {
+  fill: var(--color-muted);
+  fill-opacity: 0.35;
+  stroke: var(--color-text);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+
+.sunPath {
+  fill: none;
+  stroke: var(--color-sun);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+  stroke-opacity: 0.8;
+}
+
+.sun {
+  fill: var(--color-sun);
+  stroke: var(--color-sun);
+  stroke-width: 2;
+}
+
+.earth {
+  fill: var(--color-earth);
+  stroke: var(--color-earth);
+  stroke-width: 2;
+}
+
+.hidden {
+  fill: var(--color-surface);
+}
+
+.cursor line {
+  stroke: var(--color-text);
+  stroke-opacity: 0.6;
+  stroke-dasharray: 2 3;
+}
+
+.cursor text {
+  fill: var(--color-text);
+  font-family: var(--font-num);
+  font-size: 11px;
+}
+
+.summary {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.tables {
+  display: grid;
+  gap: var(--space-3);
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.table caption {
+  padding-bottom: var(--space-1);
+  color: var(--color-muted);
+  text-align: left;
+}
+
+.table th,
+.table td {
+  padding: var(--space-1) var(--space-2);
+  border-bottom: 1px solid var(--color-bg);
+  text-align: left;
+}
+
+.current {
+  background: var(--color-bg);
+}
