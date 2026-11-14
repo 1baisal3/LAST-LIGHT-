@@ -23,6 +23,7 @@ export function formatUtc(iso: string, lang: Lang): string {
   return new Date(iso).toLocaleString(lang, { timeZone: 'UTC' }) + ' UTC';
 }
 
+<<<<<<< HEAD
 export function formatDate(iso: string, lang: Lang): string {
   return new Date(iso).toLocaleDateString(lang, {
     timeZone: 'UTC',
@@ -34,4 +35,8 @@ export function formatDate(iso: string, lang: Lang): string {
 
 export function addHours(iso: string, hours: number): string {
   return new Date(Date.parse(iso) + hours * HOUR_MS).toISOString().replace('.000Z', 'Z');
+=======
+export function formatUtcDate(iso: string, lang: Lang): string {
+  return new Date(iso).toLocaleDateString(lang, { timeZone: 'UTC', day: '2-digit', month: '2-digit' });
+>>>>>>> a0957d795c06aefd0f6fd63733d5f2e23b820463
 }

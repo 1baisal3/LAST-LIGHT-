@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { makeDemoDataset } from '../../features/datasets/demo';
+import type { CalendarCell } from '../../sim/search';
 import type { Plan, Result } from '../../sim/types';
 import { createHandler } from './handler';
 import type { WorkerRequest } from './protocol';
@@ -66,12 +67,25 @@ describe('worker handler', () => {
     expect(response.status).toBe('error');
   });
 
-  it('reports calendar as unavailable until it is implemented', () => {
+  it('computes the calendar for every site', () => {
     const handle = createHandler();
     handle(request('loadDataset', dataset));
     const response = handle(request('calendar', S2, 2));
-    expect(response.status).toBe('error');
-    expect(response.error?.code).toBe('FEATURE_UNAVAILABLE');
+    expect(response.status).toBe('ok');
+    const cells = response.payload as CalendarCell[];
+    expect(cells.length).toBeGreaterThan(0);
+    expect(new Set(cells.map((cell) => cell.siteId))).toEqual(new Set(dataset.sites.sites.map((site) => site.id)));
+    const own = cells.find((cell) => cell.siteId === 'fixture-b' && cell.startIndex === 0);
+    expect(own?.ok).toBe(true);
+    expect(own?.marginPct).toBeCloseTo(55, 9);
+  });
+
+  it('rejects a calendar request for an invalid plan or unloaded dataset', () => {
+    const handle = createHandler();
+    expect(handle(request('calendar', S2, 1)).status).toBe('error');
+    handle(request('loadDataset', dataset));
+    const bad = handle(request('calendar', { ...S2, siteId: 'nope' }, 2));
+    expect(bad.status).toBe('error');
   });
 
   it('gives the same result on repeated runs with cached masks', () => {

@@ -1,0 +1,94 @@
+.calendar {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.title {
+  margin: 0;
+  font-size: 15px;
+}
+
+.empty,
+.note {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 13px;
+}
+
+.scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: var(--space-1);
+  font-size: 13px;
+  transition: opacity var(--t-base, 240ms);
+}
+
+.table th {
+  color: var(--color-muted);
+  font-weight: 500;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.stale {
+  opacity: 0.55;
+}
+
+.cell {
+  width: 100%;
+  min-height: 36px;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.cell:focus-visible {
+  outline: 2px solid var(--color-sun);
+  outline-offset: 2px;
+}
+
+.cell[aria-pressed='true'] {
+  border-color: var(--color-sun);
+}
+
+.ok {
+  border-left: 3px solid var(--color-ok);
+}
+
+.failBattery {
+  border-left: 3px solid var(--color-fail);
+}
+
+.failEarth {
+  border-left: 3px dashed var(--color-fail);
+}
+
+.unavailable {
+  color: var(--color-muted);
+  cursor: default;
+}
+
+@media (max-width: 768px) {
+  .cell {
+    min-height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .table {
+    transition: none;
+  }
+}

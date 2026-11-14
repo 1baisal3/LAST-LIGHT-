@@ -1,4 +1,5 @@
 import { createListenerMiddleware } from '@reduxjs/toolkit';
+import { calendarFailed, calendarReceived, calendarRejected, calendarStarted, type CalendarState } from '../features/calendar/calendarSlice';
 import { datasetActivated, type DatasetState } from '../features/datasets/datasetSlice';
 import { draftPatched, planPatched, PLAN_DEBOUNCE_MS, type PlanState } from '../features/plan/planSlice';
 import {
@@ -8,6 +9,7 @@ import {
   simulationStarted,
 } from '../features/result/resultSlice';
 import { playStopped } from '../features/timeline/viewSlice';
+import type { CalendarCell } from '../sim/search';
 import type { Result } from '../sim/types';
 import { validatePlan } from '../sim/validatePlan';
 import type { SimClient } from './worker/client';
@@ -16,6 +18,7 @@ import type { WorkerResponse, Task } from './worker/protocol';
 export interface SimState {
   plan: PlanState;
   dataset: DatasetState;
+  calendar?: CalendarState;
 }
 
 export interface SimApi {
@@ -50,6 +53,39 @@ export function runPlan(api: SimApi, client: SimClient): void {
   });
 }
 
+export function calendarKey(plan: SimState['plan']['plan']): string {
+  const { siteId: _siteId, startIndex: _startIndex, ...rest } = plan;
+  return JSON.stringify(rest);
+}
+
+export function runCalendar(api: SimApi, client: SimClient): void {
+  const state = stateOf(api);
+  const dataset = state.dataset.dataset;
+  if (!dataset) return;
+
+  const plan = state.plan.plan;
+  const key = calendarKey(plan);
+  const current = state.calendar;
+  if (
+    current &&
+    current.key === key &&
+    current.datasetId === dataset.datasetId &&
+    current.status !== 'error'
+  ) {
+    return;
+  }
+
+  const ticket = { revision: state.plan.revision, datasetId: dataset.datasetId };
+  const error = validatePlan(plan, dataset.sites, dataset.provenance.capabilities);
+  if (error) {
+    api.dispatch(calendarRejected({ ...ticket, error }));
+    return;
+  }
+
+  api.dispatch(calendarStarted({ ...ticket, key }));
+  client.send({ planRevision: ticket.revision, datasetId: ticket.datasetId, task: 'calendar', payload: plan });
+}
+
 function samePlan(a: object, b: object): boolean {
   const left = a as Record<string, unknown>;
   const right = b as Record<string, unknown>;
@@ -79,6 +115,15 @@ export function routeResponse(dispatch: SimApi['dispatch']) {
       return;
     }
 
+    if (task === 'calendar') {
+      if (response.status === 'ok') {
+        dispatch(calendarReceived({ ...ticket, cells: response.payload as CalendarCell[] }));
+      } else if (response.error) {
+        dispatch(calendarFailed({ ...ticket, error: response.error }));
+      }
+      return;
+    }
+
     if (task === 'loadDataset' && response.status === 'error' && response.error) {
       dispatch(resultFailed({ ...ticket, error: response.error }));
     }
@@ -101,6 +146,7 @@ export function createSimListener(client: SimClient) {
         });
       }
       runPlan(api, client);
+      runCalendar(api, client);
     },
   });
 
@@ -108,6 +154,7 @@ export function createSimListener(client: SimClient) {
     actionCreator: planPatched,
     effect: (_action, api) => {
       runPlan(api, client);
+      runCalendar(api, client);
     },
   });
 
