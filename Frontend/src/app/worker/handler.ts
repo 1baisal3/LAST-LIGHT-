@@ -1,5 +1,5 @@
 import type { Dataset } from '../../features/datasets/types';
-import { findNearestStart } from '../../sim/search';
+import { calendar, findNearestStart } from '../../sim/search';
 import { simulateWithMasks } from '../../sim/simulate';
 import { earthMask, litMask } from '../../sim/masks';
 import type { Plan, Site } from '../../sim/types';
@@ -86,12 +86,15 @@ export function createHandler(): (request: WorkerRequest) => WorkerResponse {
             payload: findNearestStart(prepared.site, prepared.plan),
           };
         }
-        case 'calendar':
+        case 'calendar': {
+          const prepared = prepare(request);
+          if ('code' in prepared) return { ...base, status: 'error', error: prepared };
           return {
             ...base,
-            status: 'error',
-            error: failure('calendar task is not available yet', 'FEATURE_UNAVAILABLE'),
+            status: 'ok',
+            payload: calendar(dataset!.sites.sites, prepared.plan),
           };
+        }
         default:
           return { ...base, status: 'error', error: failure('unknown task') };
       }
