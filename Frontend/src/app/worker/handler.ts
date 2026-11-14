@@ -1,4 +1,5 @@
 import type { Dataset } from '../../features/datasets/types';
+import { minCapacityFor } from '../../sim/capacity';
 import { calendar, findNearestStart } from '../../sim/search';
 import { simulateWithMasks } from '../../sim/simulate';
 import { earthMask, litMask } from '../../sim/masks';
@@ -85,6 +86,18 @@ export function createHandler(): (request: WorkerRequest) => WorkerResponse {
             status: 'ok',
             payload: findNearestStart(prepared.site, prepared.plan),
           };
+        }
+        case 'minCapacity': {
+          const prepared = prepare(request);
+          if ('code' in prepared) return { ...base, status: 'error', error: prepared };
+          if (!dataset!.provenance.capabilities.minCapacity) {
+            return {
+              ...base,
+              status: 'error',
+              error: failure('minimum capacity is not available for this dataset', 'FEATURE_UNAVAILABLE'),
+            };
+          }
+          return { ...base, status: 'ok', payload: minCapacityFor(prepared.site, prepared.plan) };
         }
         case 'calendar': {
           const prepared = prepare(request);

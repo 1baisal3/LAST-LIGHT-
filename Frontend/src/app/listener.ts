@@ -1,5 +1,12 @@
 import { createListenerMiddleware } from '@reduxjs/toolkit';
 import { calendarFailed, calendarReceived, calendarRejected, calendarStarted, type CalendarState } from '../features/calendar/calendarSlice';
+import {
+  capacityFailed,
+  capacityReceived,
+  capacityRejected,
+  capacitySearchRequested,
+  capacityStarted,
+} from '../features/fix/capacitySlice';
 import { datasetActivated, type DatasetState } from '../features/datasets/datasetSlice';
 import {
   fixFailed,
@@ -17,6 +24,7 @@ import {
   simulationStarted,
 } from '../features/result/resultSlice';
 import { playStopped } from '../features/timeline/viewSlice';
+import type { CapacityAnswer } from '../sim/capacity';
 import type { CalendarCell } from '../sim/search';
 import type { Result } from '../sim/types';
 import { validatePlan } from '../sim/validatePlan';
@@ -78,6 +86,27 @@ export function runFix(api: SimApi, client: SimClient): void {
     planRevision: ticket.revision,
     datasetId: ticket.datasetId,
     task: 'findNearestStart',
+    payload: planState.plan,
+  });
+}
+
+export function runCapacity(api: SimApi, client: SimClient): void {
+  const { plan: planState, dataset: datasetState } = stateOf(api);
+  const dataset = datasetState.dataset;
+  if (!dataset) return;
+
+  const ticket = { revision: planState.revision, datasetId: dataset.datasetId };
+  const error = validatePlan(planState.plan, dataset.sites, dataset.provenance.capabilities);
+  if (error) {
+    api.dispatch(capacityRejected({ ...ticket, error }));
+    return;
+  }
+
+  api.dispatch(capacityStarted({ ...ticket, fromCapacity: planState.plan.capacityWh }));
+  client.send({
+    planRevision: ticket.revision,
+    datasetId: ticket.datasetId,
+    task: 'minCapacity',
     payload: planState.plan,
   });
 }
@@ -144,6 +173,15 @@ export function routeResponse(dispatch: SimApi['dispatch']) {
       return;
     }
 
+    if (task === 'minCapacity') {
+      if (response.status === 'ok') {
+        dispatch(capacityReceived({ ...ticket, answer: response.payload as CapacityAnswer }));
+      } else if (response.error) {
+        dispatch(capacityFailed({ ...ticket, error: response.error }));
+      }
+      return;
+    }
+
     if (task === 'findNearestStart') {
       if (response.status === 'ok') {
         dispatch(fixReceived({ ...ticket, found: (response.payload ?? null) as FixPreview | null }));
@@ -170,6 +208,13 @@ export function routeResponse(dispatch: SimApi['dispatch']) {
 
 export function createSimListener(client: SimClient) {
   const middleware = createListenerMiddleware();
+
+  middleware.startListening({
+    actionCreator: capacitySearchRequested,
+    effect: (_action, api) => {
+      runCapacity(api, client);
+    },
+  });
 
   middleware.startListening({
     actionCreator: fixSearchRequested,
