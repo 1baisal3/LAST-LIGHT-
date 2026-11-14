@@ -3,9 +3,10 @@ import { useAppSelector } from '../../../app/store';
 import { getLang, t } from '../../../shared/i18n';
 import { BatteryFix } from './BatteryFix';
 import { DateFix } from './DateFix';
+import { HeaterFix } from './HeaterFix';
 import styles from './FixPanel.module.css';
 
-type TabId = 'date' | 'battery';
+type TabId = 'date' | 'battery' | 'heater';
 
 export function FixPanel() {
   const lang = getLang();
@@ -15,7 +16,9 @@ export function FixPanel() {
   const capabilities = useAppSelector((state) => state.dataset.dataset?.provenance.capabilities ?? null);
   const [chosen, setChosen] = useState<TabId>('date');
 
-  const tabs: TabId[] = capabilities?.minCapacity ? ['date', 'battery'] : ['date'];
+  const tabs: TabId[] = ['date'];
+  if (capabilities?.minCapacity) tabs.push('battery');
+  if (capabilities?.heater) tabs.push('heater');
   const active: TabId = tabs.includes(chosen) ? chosen : 'date';
   const ready = result !== null && windowStart !== null && resultStatus !== 'running';
   const title = t('fix.title', lang);
@@ -30,7 +33,13 @@ export function FixPanel() {
   };
 
   const body =
-    active === 'battery' ? <BatteryFix lang={lang} ready={ready} /> : <DateFix lang={lang} ready={ready} />;
+    active === 'battery' ? (
+      <BatteryFix lang={lang} ready={ready} />
+    ) : active === 'heater' ? (
+      <HeaterFix lang={lang} ready={ready} />
+    ) : (
+      <DateFix lang={lang} ready={ready} />
+    );
 
   return (
     <section className={styles.panel} aria-label={title}>

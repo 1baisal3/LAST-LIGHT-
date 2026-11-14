@@ -58,6 +58,23 @@ describe('MissionPanel', () => {
     expect(html).not.toContain('Мачта');
   });
 
+  it('shows the heater field only when the data allows heating', () => {
+    const store = configureStore({ reducer: { dataset: datasetReducer, plan: planReducer } });
+    const dataset = makeDemoDataset();
+    store.dispatch(
+      datasetActivated({
+        ...dataset,
+        provenance: { ...dataset.provenance, capabilities: { ...dataset.provenance.capabilities, heater: true } },
+      }),
+    );
+    const html = renderToStaticMarkup(
+      <Provider store={store}>
+        <MissionPanel />
+      </Provider>,
+    );
+    expect(html).toContain('Обогреватель');
+  });
+
   it('shows the error text at the invalid field', () => {
     const html = render((dispatch) => {
       dispatch(draftPatched({ capacityWh: 0, minPct: 101 }));

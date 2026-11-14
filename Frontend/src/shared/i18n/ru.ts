@@ -189,6 +189,20 @@ export const ru = {
   'fix.capacityAboveLimit': 'Нужна батарея больше {max}',
   'fix.capacityApplied': 'Применено: батарея {value}',
   'fix.capacityCaption': 'Сравнение: текущая и минимальная ёмкость',
+  'fix.tab.heater': 'Обогрев',
+  'fix.w': '{value} Вт',
+  'fix.rowHeater': 'Мощность обогрева',
+  'fix.heaterHint': 'Наибольшая мощность обогрева в тени, при которой аппарат выживает с той же датой, площадкой и батареей',
+  'fix.heaterFind': 'Рассчитать обогрев',
+  'fix.heaterSearching': 'Считаем допустимый обогрев…',
+  'fix.heaterReduce': 'Обогрев нужно снизить до {max} (сейчас {now})',
+  'fix.heaterRoom': 'Аппарат выживает с обогревом до {max} (сейчас {now})',
+  'fix.heaterAtLimit': 'Обогрев не ограничивает: аппарат выживает даже при {max}',
+  'fix.heaterNoShadow': 'Тени нет: обогрев не расходует энергию',
+  'fix.heaterEarth': 'Обогрев ни при чём: отказ по связи с Землёй',
+  'fix.heaterBattery': 'Аппарат не выживает даже без обогрева: нужна батарея больше или другая дата',
+  'fix.heaterApplied': 'Применено: обогрев {value}',
+  'fix.heaterCaption': 'Сравнение: текущий и допустимый обогрев',
 } as const;
 
 export type MessageKey = keyof typeof ru;
