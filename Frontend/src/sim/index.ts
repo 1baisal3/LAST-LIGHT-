@@ -13,5 +13,5 @@ export { computeKpis, longestRun } from './kpis';
 export { simulate, simulateWithMasks } from './simulate';
 export { validatePlan, type PlanError, type PlanErrorCode } from './validatePlan';
 export { calendar, findNearestStart, validStarts, type CalendarCell } from './search';
-export { minCapacityFor } from './capacity';
+export { MAX_CAPACITY_WH, minCapacityFor, type CapacityAnswer } from './capacity';
 export { uncertainty, type Uncertainty } from './uncertainty';
