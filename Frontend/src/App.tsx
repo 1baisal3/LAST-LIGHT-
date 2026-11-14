@@ -1,5 +1,6 @@
 import { Calendar } from './features/calendar';
 import { DataState, DataStatusBar, useDataset } from './features/datasets';
+import { HorizonProfile } from './features/horizon';
 import { MissionPanel } from './features/plan';
 import { KpiRow, Verdict } from './features/result';
 import { Scene } from './features/scene';
@@ -34,6 +35,7 @@ export function App() {
           <Scene />
           <Timeline />
           <WhyPanel />
+          <HorizonProfile />
           <Calendar />
         </>
       }
