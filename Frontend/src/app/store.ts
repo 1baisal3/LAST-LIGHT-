@@ -4,6 +4,7 @@ import { calendarReducer } from '../features/calendar/calendarSlice';
 import { datasetReducer } from '../features/datasets/datasetSlice';
 import { capacityReducer } from '../features/fix/capacitySlice';
 import { fixReducer } from '../features/fix/fixSlice';
+import { heaterReducer } from '../features/fix/heaterSlice';
 import { planReducer } from '../features/plan/planSlice';
 import { resultReducer } from '../features/result/resultSlice';
 import { viewReducer } from '../features/timeline/viewSlice';
@@ -20,6 +21,7 @@ export function makeStore(client: SimClient = createSimClient()) {
       calendar: calendarReducer,
       fix: fixReducer,
       capacity: capacityReducer,
+      heater: heaterReducer,
       plan: planReducer,
       result: resultReducer,
       view: viewReducer,

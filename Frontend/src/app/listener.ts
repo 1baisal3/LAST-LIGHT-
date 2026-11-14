@@ -9,6 +9,13 @@ import {
 } from '../features/fix/capacitySlice';
 import { datasetActivated, type DatasetState } from '../features/datasets/datasetSlice';
 import {
+  heaterFailed,
+  heaterReceived,
+  heaterRejected,
+  heaterSearchRequested,
+  heaterStarted,
+} from '../features/fix/heaterSlice';
+import {
   fixFailed,
   fixReceived,
   fixRejected,
@@ -25,6 +32,7 @@ import {
 } from '../features/result/resultSlice';
 import { playStopped } from '../features/timeline/viewSlice';
 import type { CapacityAnswer } from '../sim/capacity';
+import type { HeaterAnswer } from '../sim/heater';
 import type { CalendarCell } from '../sim/search';
 import type { Result } from '../sim/types';
 import { validatePlan } from '../sim/validatePlan';
@@ -111,6 +119,27 @@ export function runCapacity(api: SimApi, client: SimClient): void {
   });
 }
 
+export function runHeater(api: SimApi, client: SimClient): void {
+  const { plan: planState, dataset: datasetState } = stateOf(api);
+  const dataset = datasetState.dataset;
+  if (!dataset) return;
+
+  const ticket = { revision: planState.revision, datasetId: dataset.datasetId };
+  const error = validatePlan(planState.plan, dataset.sites, dataset.provenance.capabilities);
+  if (error) {
+    api.dispatch(heaterRejected({ ...ticket, error }));
+    return;
+  }
+
+  api.dispatch(heaterStarted(ticket));
+  client.send({
+    planRevision: ticket.revision,
+    datasetId: ticket.datasetId,
+    task: 'maxHeater',
+    payload: planState.plan,
+  });
+}
+
 export function calendarKey(plan: SimState['plan']['plan']): string {
   const { siteId: _siteId, startIndex: _startIndex, ...rest } = plan;
   return JSON.stringify(rest);
@@ -173,6 +202,15 @@ export function routeResponse(dispatch: SimApi['dispatch']) {
       return;
     }
 
+    if (task === 'maxHeater') {
+      if (response.status === 'ok') {
+        dispatch(heaterReceived({ ...ticket, answer: response.payload as HeaterAnswer }));
+      } else if (response.error) {
+        dispatch(heaterFailed({ ...ticket, error: response.error }));
+      }
+      return;
+    }
+
     if (task === 'minCapacity') {
       if (response.status === 'ok') {
         dispatch(capacityReceived({ ...ticket, answer: response.payload as CapacityAnswer }));
@@ -208,6 +246,13 @@ export function routeResponse(dispatch: SimApi['dispatch']) {
 
 export function createSimListener(client: SimClient) {
   const middleware = createListenerMiddleware();
+
+  middleware.startListening({
+    actionCreator: heaterSearchRequested,
+    effect: (_action, api) => {
+      runHeater(api, client);
+    },
+  });
 
   middleware.startListening({
     actionCreator: capacitySearchRequested,
