@@ -14,4 +14,5 @@ export { simulate, simulateWithMasks } from './simulate';
 export { validatePlan, type PlanError, type PlanErrorCode } from './validatePlan';
 export { calendar, findNearestStart, validStarts, type CalendarCell } from './search';
 export { MAX_CAPACITY_WH, minCapacityFor, type CapacityAnswer } from './capacity';
+export { MAX_HEATER_W, maxHeaterFor, type HeaterAnswer } from './heater';
 export { uncertainty, type Uncertainty } from './uncertainty';
