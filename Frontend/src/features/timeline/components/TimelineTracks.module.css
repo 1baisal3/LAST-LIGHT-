@@ -1,0 +1,92 @@
+.tracks {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) 72px;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.label {
+  color: var(--color-muted);
+  font-size: 13px;
+}
+
+.aside {
+  color: var(--color-muted);
+  font-size: 12px;
+  font-family: var(--font-num);
+}
+
+.band,
+.battery {
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+
+.band {
+  height: 20px;
+}
+
+.battery {
+  height: 96px;
+}
+
+.empty {
+  fill: var(--color-surface);
+}
+
+.sun {
+  fill: var(--color-sun);
+}
+
+.earth {
+  fill: var(--color-earth);
+}
+
+.charge,
+.continuation {
+  fill: none;
+  stroke: var(--color-ok);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.continuation {
+  stroke: var(--color-muted);
+  stroke-dasharray: 4 3;
+}
+
+.minLine {
+  stroke: var(--color-muted);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+.failure {
+  stroke: var(--color-fail);
+  stroke-width: 2;
+}
+
+.cursor {
+  stroke: var(--color-text);
+  stroke-width: 1.5;
+}
+
+@media (max-width: 480px) {
+  .row {
+    grid-template-columns: 56px minmax(0, 1fr);
+  }
+
+  .aside:empty {
+    display: none;
+  }
+
+  .row .aside:not(:empty) {
+    grid-column: 2;
+  }
+}
