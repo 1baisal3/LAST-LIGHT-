@@ -12,8 +12,18 @@ export function getLang(): Lang {
   }
 }
 
-export function t(key: MessageKey, lang: Lang = getLang()): string {
-  return dictionaries[lang][key];
+
+export function t(key: MessageKey | (string & {}), lang: Lang = getLang()): string {
+  const dict = dictionaries[lang] as Record<string, string>;
+  return dict[key] || key;
+}
+
+export function tf(key: MessageKey | (string & {}), params: Record<string, string | number>, lang: Lang = getLang()): string {
+  let text = t(key, lang);
+  for (const [k, v] of Object.entries(params)) {
+    text = text.replace(new RegExp(`\\{${k}\\}`, 'g'), String(v));
+  }
+  return text;
 }
 
 export type { MessageKey };

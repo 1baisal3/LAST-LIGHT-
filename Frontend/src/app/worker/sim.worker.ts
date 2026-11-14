@@ -1,13 +1,9 @@
-import { simulate } from '../../sim/simulate';
-import type { SimulateRequest, SimulateResponse } from './protocol';
+import { createHandler } from './handler';
+import type { WorkerRequest, WorkerResponse } from './protocol';
 
-self.onmessage = (event: MessageEvent<SimulateRequest>) => {
-  const { requestId, planRevision, site, plan } = event.data;
-  let response: SimulateResponse;
-  try {
-    response = { requestId, planRevision, ok: true, result: simulate(site, plan) };
-  } catch (error) {
-    response = { requestId, planRevision, ok: false, error: String(error) };
-  }
+const handle = createHandler();
+
+self.onmessage = (event: MessageEvent<WorkerRequest>) => {
+  const response: WorkerResponse = handle(event.data);
   self.postMessage(response);
 };

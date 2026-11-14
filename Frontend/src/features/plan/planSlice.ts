@@ -2,7 +2,7 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { Plan } from '../../sim/types';
 
 export const DEFAULT_PLAN: Plan = {
-  siteId: 'a',
+  siteId: 'fixture-a',
   startIndex: 0,
   durationH: 168,
   loadW: 80,
@@ -15,23 +15,32 @@ export const DEFAULT_PLAN: Plan = {
   mastM: 2,
 };
 
-interface PlanState {
+export const PLAN_DEBOUNCE_MS = 150;
+
+export interface PlanState {
   plan: Plan;
+  draft: Plan;
   revision: number;
 }
 
-const initialState: PlanState = { plan: DEFAULT_PLAN, revision: 0 };
+const initialState: PlanState = { plan: DEFAULT_PLAN, draft: DEFAULT_PLAN, revision: 0 };
 
 const planSlice = createSlice({
   name: 'plan',
   initialState,
   reducers: {
     planPatched(state, action: PayloadAction<Partial<Plan>>) {
-      state.plan = { ...state.plan, ...action.payload };
-      state.revision += 1;
+      return {
+        plan: { ...state.plan, ...action.payload },
+        draft: { ...state.draft, ...action.payload },
+        revision: state.revision + 1,
+      };
+    },
+    draftPatched(state, action: PayloadAction<Partial<Plan>>) {
+      return { ...state, draft: { ...state.draft, ...action.payload } };
     },
   },
 });
 
-export const { planPatched } = planSlice.actions;
+export const { planPatched, draftPatched } = planSlice.actions;
 export const planReducer = planSlice.reducer;

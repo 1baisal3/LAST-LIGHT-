@@ -1,3 +1,4 @@
+import { DataState, useDataset } from './features/datasets';
 import { MissionPanel } from './features/plan';
 import { Verdict } from './features/result';
 import { Scene } from './features/scene';
@@ -6,6 +7,17 @@ import { WhyPanel } from './features/why';
 import { AppShell } from './shared/layout/AppShell';
 
 export function App() {
+  const data = useDataset();
+
+  if (data.status !== 'ready') {
+    return (
+      <AppShell
+        side={null}
+        main={<DataState status={data.status} message={data.error} onRetry={data.retry} />}
+      />
+    );
+  }
+
   return (
     <AppShell
       side={<MissionPanel />}

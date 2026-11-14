@@ -10,7 +10,8 @@ export {
   type PowerPlan,
 } from './battery';
 export { computeKpis, longestRun } from './kpis';
-export { simulate } from './simulate';
-export { findNearestStart } from './search';
+export { simulate, simulateWithMasks } from './simulate';
+export { validatePlan, type PlanError, type PlanErrorCode } from './validatePlan';
+export { calendar, findNearestStart, validStarts, type CalendarCell } from './search';
 export { minCapacityFor } from './capacity';
 export { uncertainty, type Uncertainty } from './uncertainty';

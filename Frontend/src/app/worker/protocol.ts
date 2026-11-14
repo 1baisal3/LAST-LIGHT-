@@ -1,13 +1,25 @@
-import type { Plan, Result, Site } from '../../sim/types';
+import type { Dataset } from '../../features/datasets/types';
+import type { PlanError } from '../../sim/validatePlan';
+import type { Plan } from '../../sim/types';
 
-export interface SimulateRequest {
+export type Task = 'loadDataset' | 'simulate' | 'findNearestStart' | 'calendar';
+
+export interface WorkerRequest {
   requestId: number;
   planRevision: number;
   datasetId: string;
-  site: Site;
-  plan: Plan;
+  task: Task;
+  payload: unknown;
 }
 
-export type SimulateResponse =
-  | { requestId: number; planRevision: number; ok: true; result: Result }
-  | { requestId: number; planRevision: number; ok: false; error: string };
+export interface WorkerResponse {
+  requestId: number;
+  planRevision: number;
+  datasetId: string;
+  status: 'ok' | 'error';
+  payload?: unknown;
+  error?: PlanError;
+}
+
+export type LoadDatasetPayload = Dataset;
+export type PlanPayload = Plan;

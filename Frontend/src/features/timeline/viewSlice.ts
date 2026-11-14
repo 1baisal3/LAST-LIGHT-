@@ -18,8 +18,11 @@ const viewSlice = createSlice({
     playToggled(state) {
       state.playing = !state.playing;
     },
+    playStopped(state) {
+      state.playing = false;
+    },
   },
 });
 
-export const { hourSelected, playToggled } = viewSlice.actions;
+export const { hourSelected, playToggled, playStopped } = viewSlice.actions;
 export const viewReducer = viewSlice.reducer;
