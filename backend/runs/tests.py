@@ -55,6 +55,14 @@ class SavedScenarioAPITests(APITestCase):
         self.assertEqual(response.data['count'], 1)
         self.assertEqual(response.data['results'][0]['id'], self.own.pk)
 
+    def test_runs_route_shares_history_and_isolates_foreign_records(self):
+        response = self.client.get(reverse('run-list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, self.client.get(self.url).data)
+        self.assertEqual(self.client.get(reverse('run-detail', args=[self.foreign.pk])).status_code, 404)
+        self.assertEqual(self.client.delete(reverse('run-detail', args=[self.foreign.pk])).status_code, 404)
+        self.assertEqual(self.client.delete(reverse('run-detail', args=[self.own.pk])).status_code, 204)
+
     def test_pagination_never_exceeds_50_and_allows_older_records(self):
         SavedScenario.objects.bulk_create([
             SavedScenario(user=self.user, battery_capacity_wh=100, mast_height_m=1)
