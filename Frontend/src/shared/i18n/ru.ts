@@ -158,6 +158,23 @@ export const ru = {
   'horizon.colBody': 'Тело',
   'horizon.colEl': 'Высота, °',
   'horizon.colState': 'Видимость',
+  'fix.title': 'Исправить план',
+  'fix.dateHint': 'Ближайшая дата старта, при которой аппарат выживает 7 суток с теми же параметрами',
+  'fix.find': 'Найти дату',
+  'fix.needResult': 'Сначала нужен расчёт текущего плана',
+  'fix.searching': 'Ищем ближайшую дату…',
+  'fix.same': 'Текущая дата уже подходит',
+  'fix.none': 'В доступном окне подходящей даты нет',
+  'fix.error': 'Поиск не выполнен: план содержит ошибку',
+  'fix.applied': 'Применено: старт {date}',
+  'fix.apply': 'Применить',
+  'fix.compareCaption': 'Сравнение: текущий план и предложенная дата',
+  'fix.before': 'Сейчас',
+  'fix.after': 'Предложение',
+  'fix.rowDate': 'Дата старта (UTC)',
+  'fix.rowOutcome': 'Итог',
+  'fix.outcomeOk': 'выживает',
+  'fix.outcomeFail': 'отказ на {hour}-м часу, {reason}',
 } as const;
 
 export type MessageKey = keyof typeof ru;
