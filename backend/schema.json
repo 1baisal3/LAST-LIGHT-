@@ -1,0 +1,1790 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "Last Light API",
+        "version": "1.1.0",
+        "description": "Lunar mission engineering simulations, recovery plans and private scenario history."
+    },
+    "paths": {
+        "/api/auth/register/": {
+            "post": {
+                "operationId": "api_auth_register_create",
+                "tags": [
+                    "api"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegistrationRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegistrationRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegistrationRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {}
+                ],
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Registration"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/auth/token/": {
+            "post": {
+                "operationId": "api_auth_token_create",
+                "description": "Takes a set of user credentials and returns an access and refresh JSON web\ntoken pair to prove the authentication of those credentials.",
+                "tags": [
+                    "api"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TokenObtainPairRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TokenObtainPairRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TokenObtainPairRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TokenObtainPair"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/auth/token/refresh/": {
+            "post": {
+                "operationId": "api_auth_token_refresh_create",
+                "description": "Takes a refresh type JSON web token and returns an access type JSON web\ntoken if the refresh token is valid.",
+                "tags": [
+                    "api"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TokenRefreshRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TokenRefreshRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TokenRefreshRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TokenRefresh"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/mission/": {
+            "post": {
+                "operationId": "api_mission_create",
+                "description": "Simulate 1–168 continuous hourly intervals (duration_hours, default 24), including Sun/Earth azimuths and a 36-point horizon_profile. Seven-day clients send duration_hours=168. disaster_mode injects a manual solar-storm-v1 stress test and forces bounded Fix Plan with stricter reserves. Source mode is selected by the server. Optional throttling returns 429 with Retry-After.",
+                "tags": [
+                    "Mission"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MissionSimulationRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MissionSimulationRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MissionSimulationRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "jwtAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MissionResponse"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "description": "Invalid simulation input."
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "description": "JWT authentication required."
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SourceError"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ThrottleError"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "502": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SourceError"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "503": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SourceError"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "504": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SourceError"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/mission/fix-plan/": {
+            "post": {
+                "operationId": "api_mission_fix_plan_create",
+                "description": "Evaluate the scenario and search for a recovery plan. Forces auto_resolve=true. Transit and waiting survival are not modeled.",
+                "tags": [
+                    "Fix Plan"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MissionSimulationRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MissionSimulationRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MissionSimulationRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "jwtAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FixPlanResponse"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "description": "Invalid simulation input."
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "description": "JWT authentication required."
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SourceError"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ThrottleError"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "502": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SourceError"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "503": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SourceError"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "504": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SourceError"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/runs/": {
+            "get": {
+                "operationId": "api_runs_list",
+                "description": "Own saved scenarios, newest first, at most 50 per page.",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "required": false,
+                        "in": "query",
+                        "description": "A page number within the paginated result set.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page_size",
+                        "required": false,
+                        "in": "query",
+                        "description": "Number of results to return per page.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "tags": [
+                    "Runs"
+                ],
+                "security": [
+                    {
+                        "jwtAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedSavedScenarioList"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "post": {
+                "operationId": "api_runs_create",
+                "description": "Save a scenario; the authenticated user is always the owner.",
+                "tags": [
+                    "Runs"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SavedScenarioRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SavedScenarioRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SavedScenarioRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "jwtAuth": []
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SavedScenario"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/runs/{id}/": {
+            "get": {
+                "operationId": "api_runs_retrieve",
+                "description": "Read an owned scenario; foreign IDs return 404.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "A unique integer value identifying this saved scenario.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Runs"
+                ],
+                "security": [
+                    {
+                        "jwtAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SavedScenario"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "api_runs_destroy",
+                "description": "Delete an owned scenario; foreign IDs return 404.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "A unique integer value identifying this saved scenario.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Runs"
+                ],
+                "security": [
+                    {
+                        "jwtAuth": []
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No response body"
+                    }
+                }
+            }
+        },
+        "/api/scenarios/": {
+            "get": {
+                "operationId": "api_scenarios_list",
+                "description": "Own saved scenarios, newest first, at most 50 per page.",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "required": false,
+                        "in": "query",
+                        "description": "A page number within the paginated result set.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page_size",
+                        "required": false,
+                        "in": "query",
+                        "description": "Number of results to return per page.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "tags": [
+                    "Runs"
+                ],
+                "security": [
+                    {
+                        "jwtAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedSavedScenarioList"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "post": {
+                "operationId": "api_scenarios_create",
+                "description": "Save a scenario; the authenticated user is always the owner.",
+                "tags": [
+                    "Runs"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SavedScenarioRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SavedScenarioRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SavedScenarioRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "jwtAuth": []
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SavedScenario"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/scenarios/{id}/": {
+            "get": {
+                "operationId": "api_scenarios_retrieve",
+                "description": "Read an owned scenario; foreign IDs return 404.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "A unique integer value identifying this saved scenario.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Runs"
+                ],
+                "security": [
+                    {
+                        "jwtAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SavedScenario"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "api_scenarios_destroy",
+                "description": "Delete an owned scenario; foreign IDs return 404.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "A unique integer value identifying this saved scenario.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Runs"
+                ],
+                "security": [
+                    {
+                        "jwtAuth": []
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No response body"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "DataModeEnum": {
+                "enum": [
+                    "synthetic-v1",
+                    "external",
+                    "injected"
+                ],
+                "type": "string",
+                "description": "* `synthetic-v1` - synthetic-v1\n* `external` - external\n* `injected` - injected"
+            },
+            "FixPlan": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "$ref": "#/components/schemas/FixPlanStatusEnum"
+                    },
+                    "recommendation": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/RecoveryCandidate"
+                            }
+                        ],
+                        "nullable": true
+                    },
+                    "attempts": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/RecoveryCandidate"
+                        }
+                    },
+                    "evaluated_candidates": {
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "search_complete": {
+                        "type": "boolean"
+                    },
+                    "scope": {
+                        "type": "string"
+                    },
+                    "forced": {
+                        "type": "boolean"
+                    },
+                    "trigger": {
+                        "$ref": "#/components/schemas/TriggerEnum"
+                    }
+                },
+                "required": [
+                    "attempts",
+                    "evaluated_candidates",
+                    "forced",
+                    "recommendation",
+                    "scope",
+                    "search_complete",
+                    "status",
+                    "trigger"
+                ]
+            },
+            "FixPlanResponse": {
+                "type": "object",
+                "properties": {
+                    "risk": {
+                        "$ref": "#/components/schemas/Risk"
+                    },
+                    "fix_plan": {
+                        "$ref": "#/components/schemas/FixPlan"
+                    },
+                    "threat_status": {
+                        "$ref": "#/components/schemas/ThreatStatus"
+                    }
+                },
+                "required": [
+                    "fix_plan",
+                    "risk",
+                    "threat_status"
+                ]
+            },
+            "FixPlanStatusEnum": {
+                "enum": [
+                    "not_needed",
+                    "disabled",
+                    "found",
+                    "not_found",
+                    "budget_exhausted",
+                    "incomplete"
+                ],
+                "type": "string",
+                "description": "* `not_needed` - not_needed\n* `disabled` - disabled\n* `found` - found\n* `not_found` - not_found\n* `budget_exhausted` - budget_exhausted\n* `incomplete` - incomplete"
+            },
+            "HorizonPoint": {
+                "type": "object",
+                "properties": {
+                    "azimuth_deg": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 350,
+                        "minimum": 0,
+                        "description": "Bearing clockwise from north; 0, 10, ..., 350 degrees."
+                    },
+                    "elevation_deg": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 90,
+                        "minimum": -90,
+                        "description": "LOLA horizon elevation above the local horizontal, including mast height and lunar curvature."
+                    }
+                },
+                "required": [
+                    "azimuth_deg",
+                    "elevation_deg"
+                ]
+            },
+            "HourlySample": {
+                "type": "object",
+                "properties": {
+                    "timestamp": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "sun_elevation_deg": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "sun_azimuth_deg": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 360,
+                        "minimum": 0,
+                        "description": "Degrees clockwise from north, in [0, 360)."
+                    },
+                    "earth_elevation_deg": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "earth_azimuth_deg": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 360,
+                        "minimum": 0,
+                        "description": "Degrees clockwise from north, in [0, 360)."
+                    },
+                    "sun_horizon_deg": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "earth_horizon_deg": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "sun_visible": {
+                        "type": "boolean"
+                    },
+                    "earth_visible": {
+                        "type": "boolean"
+                    },
+                    "communications_available": {
+                        "type": "boolean"
+                    },
+                    "communications_blackout": {
+                        "type": "boolean"
+                    },
+                    "threat_phase": {
+                        "$ref": "#/components/schemas/ThreatPhaseEnum"
+                    },
+                    "systems_mode": {
+                        "$ref": "#/components/schemas/SystemsModeEnum"
+                    },
+                    "panel_health_factor": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 1,
+                        "minimum": 0
+                    },
+                    "effective_power_load_w": {
+                        "type": "number",
+                        "format": "double",
+                        "minimum": 0
+                    },
+                    "effective_internal_heat_w": {
+                        "type": "number",
+                        "format": "double",
+                        "minimum": 0
+                    },
+                    "solar_irradiance_w_m2": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "panel_power_w": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "panel_dust_transmission": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "energy_balance_wh": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "battery_charge_wh": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "unserved_energy_wh": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "spilled_energy_wh": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "temperature_c": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "temperature_within_limits": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "battery_charge_wh",
+                    "communications_available",
+                    "communications_blackout",
+                    "earth_azimuth_deg",
+                    "earth_elevation_deg",
+                    "earth_horizon_deg",
+                    "earth_visible",
+                    "effective_internal_heat_w",
+                    "effective_power_load_w",
+                    "energy_balance_wh",
+                    "panel_dust_transmission",
+                    "panel_health_factor",
+                    "panel_power_w",
+                    "solar_irradiance_w_m2",
+                    "spilled_energy_wh",
+                    "sun_azimuth_deg",
+                    "sun_elevation_deg",
+                    "sun_horizon_deg",
+                    "sun_visible",
+                    "systems_mode",
+                    "temperature_c",
+                    "temperature_within_limits",
+                    "threat_phase",
+                    "timestamp",
+                    "unserved_energy_wh"
+                ]
+            },
+            "MissionResponse": {
+                "type": "object",
+                "properties": {
+                    "risk": {
+                        "$ref": "#/components/schemas/Risk"
+                    },
+                    "fix_plan": {
+                        "$ref": "#/components/schemas/FixPlan"
+                    },
+                    "threat_status": {
+                        "$ref": "#/components/schemas/ThreatStatus"
+                    },
+                    "latitude": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "longitude": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "date": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "duration_hours": {
+                        "type": "integer",
+                        "maximum": 168,
+                        "minimum": 1
+                    },
+                    "timezone": {
+                        "$ref": "#/components/schemas/TimezoneEnum"
+                    },
+                    "is_placeholder": {
+                        "type": "boolean"
+                    },
+                    "model": {
+                        "$ref": "#/components/schemas/ModelMetadata"
+                    },
+                    "hourly_data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/HourlySample"
+                        },
+                        "maxItems": 168,
+                        "minItems": 1
+                    },
+                    "horizon_profile": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/HorizonPoint"
+                        },
+                        "description": "Static 360-degree horizon at the landing site, sampled every 10 degrees. Individual hourly visibility uses exact target bearings.",
+                        "maxItems": 36,
+                        "minItems": 36
+                    }
+                },
+                "required": [
+                    "date",
+                    "duration_hours",
+                    "fix_plan",
+                    "horizon_profile",
+                    "hourly_data",
+                    "is_placeholder",
+                    "latitude",
+                    "longitude",
+                    "model",
+                    "risk",
+                    "threat_status",
+                    "timezone"
+                ]
+            },
+            "MissionSimulationRequest": {
+                "type": "object",
+                "properties": {
+                    "latitude": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 90,
+                        "minimum": -90
+                    },
+                    "longitude": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 180,
+                        "minimum": -180
+                    },
+                    "date": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "UTC calendar date in YYYY-MM-DD format, years 1900 through 2100."
+                    },
+                    "duration_hours": {
+                        "type": "integer",
+                        "maximum": 168,
+                        "minimum": 1,
+                        "default": 24,
+                        "description": "Continuous hourly simulation; use 168 for a seven-day mission. Defaults to 24 for existing API clients."
+                    },
+                    "battery_capacity_wh": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 1000000000.0,
+                        "minimum": 0.01,
+                        "default": 1000.0
+                    },
+                    "initial_charge_percent": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 100,
+                        "minimum": 0,
+                        "default": 100.0
+                    },
+                    "mast_height_m": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 100,
+                        "minimum": 0,
+                        "default": 2.0
+                    },
+                    "panel_area_m2": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 10000,
+                        "minimum": 0,
+                        "default": 2.0
+                    },
+                    "panel_efficiency": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 1,
+                        "minimum": 0,
+                        "default": 0.22
+                    },
+                    "power_load_w": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 1000000.0,
+                        "minimum": 0,
+                        "default": 50.0
+                    },
+                    "initial_temperature_c": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 120,
+                        "minimum": -130,
+                        "default": 20.0
+                    },
+                    "thermal_capacity_j_k": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 1000000000.0,
+                        "minimum": 1,
+                        "default": 20000.0
+                    },
+                    "thermal_area_m2": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 10000,
+                        "minimum": 0.01,
+                        "default": 1.0
+                    },
+                    "solar_absorptivity": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 1,
+                        "minimum": 0,
+                        "default": 0.85
+                    },
+                    "emissivity": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 1,
+                        "minimum": 0.01,
+                        "default": 0.9
+                    },
+                    "internal_heat_w": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 1000000.0,
+                        "minimum": 0,
+                        "default": 10.0
+                    },
+                    "initial_dust_g_m2": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 10000,
+                        "minimum": 0,
+                        "default": 0.0
+                    },
+                    "dust_deposition_g_m2_day": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 1000,
+                        "minimum": 0,
+                        "default": 0.05
+                    },
+                    "dust_extinction_m2_g": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 1000,
+                        "minimum": 0,
+                        "default": 0.5
+                    },
+                    "auto_resolve": {
+                        "type": "boolean",
+                        "default": true
+                    },
+                    "critical_charge_percent": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 50,
+                        "minimum": 0,
+                        "default": 5.0
+                    },
+                    "minimum_survival_percent": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 100,
+                        "minimum": 0,
+                        "default": 100.0
+                    },
+                    "disaster_mode": {
+                        "type": "boolean",
+                        "default": false,
+                        "description": "Inject solar-storm-v1: blackout, permanent electrical panel damage and critical-load operation. Forces Fix Plan with stricter reserves; not an observed event."
+                    },
+                    "worst_case_override": {
+                        "type": "boolean",
+                        "writeOnly": true,
+                        "description": "Alias for disaster_mode. Conflicting explicit values are rejected."
+                    }
+                },
+                "required": [
+                    "date",
+                    "latitude",
+                    "longitude"
+                ]
+            },
+            "ModelMetadata": {
+                "type": "object",
+                "properties": {
+                    "version": {
+                        "type": "string"
+                    },
+                    "data_mode": {
+                        "$ref": "#/components/schemas/DataModeEnum"
+                    },
+                    "parameters": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "number",
+                            "format": "double"
+                        }
+                    },
+                    "temperature_limits_c": {
+                        "type": "array",
+                        "items": {
+                            "type": "number",
+                            "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                    },
+                    "ephemeris_source": {
+                        "type": "string"
+                    },
+                    "terrain_source": {
+                        "type": "string"
+                    },
+                    "terrain_sha256": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "ephemeris_sha256": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "terrain_profile_distance_m": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "terrain_profile_step_m": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "assumptions": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "required": [
+                    "assumptions",
+                    "data_mode",
+                    "ephemeris_sha256",
+                    "ephemeris_source",
+                    "parameters",
+                    "temperature_limits_c",
+                    "terrain_profile_distance_m",
+                    "terrain_profile_step_m",
+                    "terrain_sha256",
+                    "terrain_source",
+                    "version"
+                ]
+            },
+            "PaginatedSavedScenarioList": {
+                "type": "object",
+                "required": [
+                    "count",
+                    "results"
+                ],
+                "properties": {
+                    "count": {
+                        "type": "integer",
+                        "example": 123
+                    },
+                    "next": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "uri",
+                        "example": "http://api.example.org/accounts/?page=4"
+                    },
+                    "previous": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "uri",
+                        "example": "http://api.example.org/accounts/?page=2"
+                    },
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SavedScenario"
+                        }
+                    }
+                }
+            },
+            "RecoveryCandidate": {
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "$ref": "#/components/schemas/TypeEnum"
+                    },
+                    "latitude": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "longitude": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "date": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "distance_m": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 1000,
+                        "minimum": 0
+                    },
+                    "delay_days": {
+                        "type": "integer",
+                        "maximum": 7,
+                        "minimum": 0
+                    },
+                    "risk": {
+                        "$ref": "#/components/schemas/Risk"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/RecoveryCandidateStatusEnum"
+                    },
+                    "reason": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "date",
+                    "delay_days",
+                    "distance_m",
+                    "latitude",
+                    "longitude",
+                    "type"
+                ]
+            },
+            "RecoveryCandidateStatusEnum": {
+                "enum": [
+                    "safe",
+                    "unsafe",
+                    "unavailable"
+                ],
+                "type": "string",
+                "description": "* `safe` - safe\n* `unsafe` - unsafe\n* `unavailable` - unavailable"
+            },
+            "Registration": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "username": {
+                        "type": "string",
+                        "description": "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.",
+                        "pattern": "^[\\w.@+-]+$",
+                        "maxLength": 150
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "maxLength": 254
+                    }
+                },
+                "required": [
+                    "email",
+                    "id",
+                    "username"
+                ]
+            },
+            "RegistrationRequest": {
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.",
+                        "pattern": "^[\\w.@+-]+$",
+                        "maxLength": 150
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "minLength": 1,
+                        "maxLength": 254
+                    },
+                    "password": {
+                        "type": "string",
+                        "writeOnly": true,
+                        "minLength": 1
+                    }
+                },
+                "required": [
+                    "email",
+                    "password",
+                    "username"
+                ]
+            },
+            "Risk": {
+                "type": "object",
+                "properties": {
+                    "is_safe": {
+                        "type": "boolean"
+                    },
+                    "reasons": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "minimum_charge_percent": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 100,
+                        "minimum": 0
+                    },
+                    "survival_percent": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 100,
+                        "minimum": 0
+                    },
+                    "survival_definition": {
+                        "type": "string"
+                    },
+                    "unserved_energy_wh": {
+                        "type": "number",
+                        "format": "double",
+                        "minimum": 0
+                    },
+                    "thermal_violation_hours": {
+                        "type": "integer",
+                        "maximum": 168,
+                        "minimum": 0
+                    },
+                    "critical_charge_percent": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "minimum_survival_percent": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "communications_blackout_hours": {
+                        "type": "integer",
+                        "maximum": 168,
+                        "minimum": 0
+                    },
+                    "risk_multiplier": {
+                        "type": "number",
+                        "format": "double",
+                        "minimum": 1
+                    }
+                },
+                "required": [
+                    "communications_blackout_hours",
+                    "critical_charge_percent",
+                    "is_safe",
+                    "minimum_charge_percent",
+                    "minimum_survival_percent",
+                    "reasons",
+                    "risk_multiplier",
+                    "survival_definition",
+                    "survival_percent",
+                    "thermal_violation_hours",
+                    "unserved_energy_wh"
+                ]
+            },
+            "SavedScenario": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "user": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "battery_capacity_wh": {
+                        "type": "number",
+                        "format": "double",
+                        "minimum": 0.01,
+                        "description": "Battery capacity in watt-hours."
+                    },
+                    "initial_charge_percent": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 100,
+                        "minimum": 0
+                    },
+                    "mast_height_m": {
+                        "type": "number",
+                        "format": "double",
+                        "minimum": 0,
+                        "description": "Mast height in metres."
+                    },
+                    "worst_case_mode": {
+                        "type": "boolean"
+                    },
+                    "results": {},
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "battery_capacity_wh",
+                    "created_at",
+                    "id",
+                    "mast_height_m",
+                    "user"
+                ]
+            },
+            "SavedScenarioRequest": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "battery_capacity_wh": {
+                        "type": "number",
+                        "format": "double",
+                        "minimum": 0.01,
+                        "description": "Battery capacity in watt-hours."
+                    },
+                    "initial_charge_percent": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 100,
+                        "minimum": 0
+                    },
+                    "mast_height_m": {
+                        "type": "number",
+                        "format": "double",
+                        "minimum": 0,
+                        "description": "Mast height in metres."
+                    },
+                    "worst_case_mode": {
+                        "type": "boolean"
+                    },
+                    "results": {}
+                },
+                "required": [
+                    "battery_capacity_wh",
+                    "mast_height_m"
+                ]
+            },
+            "SourceEnum": {
+                "enum": [
+                    "none",
+                    "manual_simulation"
+                ],
+                "type": "string",
+                "description": "* `none` - none\n* `manual_simulation` - manual_simulation"
+            },
+            "SourceError": {
+                "type": "object",
+                "properties": {
+                    "detail": {
+                        "type": "string"
+                    },
+                    "code": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "code",
+                    "detail"
+                ]
+            },
+            "SystemsModeEnum": {
+                "enum": [
+                    "nominal",
+                    "critical_only"
+                ],
+                "type": "string",
+                "description": "* `nominal` - nominal\n* `critical_only` - critical_only"
+            },
+            "ThreatPhaseEnum": {
+                "enum": [
+                    "disabled",
+                    "scheduled",
+                    "active",
+                    "residual"
+                ],
+                "type": "string",
+                "description": "* `disabled` - disabled\n* `scheduled` - scheduled\n* `active` - active\n* `residual` - residual"
+            },
+            "ThreatStatus": {
+                "type": "object",
+                "properties": {
+                    "enabled": {
+                        "type": "boolean"
+                    },
+                    "scenario": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "source": {
+                        "$ref": "#/components/schemas/SourceEnum"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/ThreatStatusStatusEnum"
+                    },
+                    "event_start": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "event_end": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "risk_multiplier": {
+                        "type": "number",
+                        "format": "double",
+                        "minimum": 1
+                    },
+                    "final_panel_health_factor": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 1,
+                        "minimum": 0
+                    },
+                    "panel_shock_factor": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 1,
+                        "minimum": 0
+                    },
+                    "residual_panel_factor": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 1,
+                        "minimum": 0
+                    },
+                    "panel_damage_rate_per_hour": {
+                        "type": "number",
+                        "format": "double",
+                        "minimum": 0
+                    },
+                    "critical_load_fraction": {
+                        "type": "number",
+                        "format": "double",
+                        "maximum": 1,
+                        "minimum": 0
+                    },
+                    "disabled_systems": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "communications_blackout_hours": {
+                        "type": "integer",
+                        "maximum": 168,
+                        "minimum": 0
+                    },
+                    "fix_plan_forced": {
+                        "type": "boolean"
+                    },
+                    "is_observed_event": {
+                        "type": "boolean"
+                    },
+                    "assumptions": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "required": [
+                    "assumptions",
+                    "communications_blackout_hours",
+                    "critical_load_fraction",
+                    "disabled_systems",
+                    "enabled",
+                    "event_end",
+                    "event_start",
+                    "final_panel_health_factor",
+                    "fix_plan_forced",
+                    "is_observed_event",
+                    "panel_damage_rate_per_hour",
+                    "panel_shock_factor",
+                    "residual_panel_factor",
+                    "risk_multiplier",
+                    "scenario",
+                    "source",
+                    "status"
+                ]
+            },
+            "ThreatStatusStatusEnum": {
+                "enum": [
+                    "disabled",
+                    "event_in_window",
+                    "residual_damage",
+                    "scheduled"
+                ],
+                "type": "string",
+                "description": "* `disabled` - disabled\n* `event_in_window` - event_in_window\n* `residual_damage` - residual_damage\n* `scheduled` - scheduled"
+            },
+            "ThrottleError": {
+                "type": "object",
+                "properties": {
+                    "detail": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "detail"
+                ]
+            },
+            "TimezoneEnum": {
+                "enum": [
+                    "UTC"
+                ],
+                "type": "string",
+                "description": "* `UTC` - UTC"
+            },
+            "TokenObtainPair": {
+                "type": "object",
+                "properties": {
+                    "access": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "refresh": {
+                        "type": "string",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "access",
+                    "refresh"
+                ]
+            },
+            "TokenObtainPairRequest": {
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "type": "string",
+                        "writeOnly": true,
+                        "minLength": 1
+                    },
+                    "password": {
+                        "type": "string",
+                        "writeOnly": true,
+                        "minLength": 1
+                    }
+                },
+                "required": [
+                    "password",
+                    "username"
+                ]
+            },
+            "TokenRefresh": {
+                "type": "object",
+                "properties": {
+                    "access": {
+                        "type": "string",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "access"
+                ]
+            },
+            "TokenRefreshRequest": {
+                "type": "object",
+                "properties": {
+                    "refresh": {
+                        "type": "string",
+                        "writeOnly": true,
+                        "minLength": 1
+                    }
+                },
+                "required": [
+                    "refresh"
+                ]
+            },
+            "TriggerEnum": {
+                "enum": [
+                    "none",
+                    "unsafe_scenario",
+                    "disaster_mode"
+                ],
+                "type": "string",
+                "description": "* `none` - none\n* `unsafe_scenario` - unsafe_scenario\n* `disaster_mode` - disaster_mode"
+            },
+            "TypeEnum": {
+                "enum": [
+                    "safe_haven",
+                    "alternative_window"
+                ],
+                "type": "string",
+                "description": "* `safe_haven` - safe_haven\n* `alternative_window` - alternative_window"
+            }
+        },
+        "securitySchemes": {
+            "jwtAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    }
+}

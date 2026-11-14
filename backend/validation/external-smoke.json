@@ -1,0 +1,53 @@
+{
+  "status": "passed",
+  "checked_at_utc": "2026-11-14T20:12:55.803449+00:00",
+  "scope": "Live external-source integration and response consistency, not calibrated scientific accuracy.",
+  "request": {
+    "latitude": -89.5,
+    "longitude": 32.0,
+    "date": "2026-11-15",
+    "duration_hours": 168,
+    "battery_capacity_wh": 1000.0,
+    "initial_charge_percent": 100.0,
+    "mast_height_m": 2.0,
+    "panel_area_m2": 2.0,
+    "panel_efficiency": 0.22,
+    "power_load_w": 50.0,
+    "initial_temperature_c": 20.0,
+    "thermal_capacity_j_k": 20000.0,
+    "thermal_area_m2": 1.0,
+    "solar_absorptivity": 0.85,
+    "emissivity": 0.9,
+    "internal_heat_w": 10.0,
+    "initial_dust_g_m2": 0.0,
+    "dust_deposition_g_m2_day": 0.05,
+    "dust_extinction_m2_g": 0.5,
+    "auto_resolve": false,
+    "critical_charge_percent": 5.0,
+    "minimum_survival_percent": 100.0,
+    "disaster_mode": false
+  },
+  "terrain_source": "https://pgda.gsfc.nasa.gov/data/LOLA_20mpp/LDEM_80S_80MPP_ADJ.TIF",
+  "terrain_sha256": "9a8528372936f9494c30d64e4eb9beec87538955663dd129d9654a4459553c26",
+  "ephemeris_source": "https://ssd.jpl.nasa.gov/api/horizons.api",
+  "ephemeris_sha256": [
+    "11d643e3367330d469f673d0f167fd91127f014539d2c32fe769bd733dd47b06",
+    "d0d1dec08b4a563381cc0da47dd2729bc3c8dfd73850962926b7d866a4b133eb"
+  ],
+  "hourly_samples": 168,
+  "first_timestamp": "2026-11-15T00:00:00Z",
+  "last_timestamp": "2026-11-21T23:00:00Z",
+  "horizon_points": 36,
+  "horizon_range_deg": [
+    -0.08694380413506603,
+    10.346020695095639
+  ],
+  "is_placeholder": false,
+  "checks": [
+    "response_contract",
+    "continuous_utc_hours",
+    "battery_continuity",
+    "terrain_sha256",
+    "sun_and_earth_archives"
+  ]
+}
