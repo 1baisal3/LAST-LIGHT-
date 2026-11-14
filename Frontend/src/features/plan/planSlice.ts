@@ -39,8 +39,11 @@ const planSlice = createSlice({
     draftPatched(state, action: PayloadAction<Partial<Plan>>) {
       return { ...state, draft: { ...state.draft, ...action.payload } };
     },
+    draftCommitRequested(state) {
+      return state;
+    },
   },
 });
 
-export const { planPatched, draftPatched } = planSlice.actions;
+export const { planPatched, draftPatched, draftCommitRequested } = planSlice.actions;
 export const planReducer = planSlice.reducer;

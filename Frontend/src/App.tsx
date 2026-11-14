@@ -1,6 +1,6 @@
 import { DataState, useDataset } from './features/datasets';
 import { MissionPanel } from './features/plan';
-import { Verdict } from './features/result';
+import { KpiRow, Verdict } from './features/result';
 import { Scene } from './features/scene';
 import { Timeline } from './features/timeline';
 import { WhyPanel } from './features/why';
@@ -24,6 +24,7 @@ export function App() {
       main={
         <>
           <Verdict />
+          <KpiRow />
           <Scene />
           <Timeline />
           <WhyPanel />

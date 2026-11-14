@@ -1,0 +1,61 @@
+.form {
+  display: grid;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--fs-l);
+}
+
+.group {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.legend {
+  margin-bottom: var(--space-2);
+  padding: 0;
+  color: var(--color-muted);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.mast {
+  display: grid;
+  gap: var(--space-1);
+  font-size: var(--fs-s);
+}
+
+.select {
+  height: 36px;
+  padding: 0 var(--space-2);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font: inherit;
+}
+
+.select:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.note {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: var(--fs-xs);
+}
+
+@media (pointer: coarse) {
+  .select {
+    height: 44px;
+  }
+}
