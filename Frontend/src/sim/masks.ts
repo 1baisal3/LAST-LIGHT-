@@ -17,14 +17,20 @@ export function profileForMast(site: Site, mastM: Plan['mastM']): readonly numbe
   return profile;
 }
 
-export function litMask(site: Site, mastM: Plan['mastM']): Uint8Array {
-  const profile = profileForMast(site, mastM);
+export function litMaskFor(site: Site, profile: readonly number[]): Uint8Array {
   return Uint8Array.from(site.hours, (hour) => (isAbove(profile, hour.sunAz, hour.sunEl) ? 1 : 0));
 }
 
-export function earthMask(site: Site, mastM: Plan['mastM']): Uint8Array {
-  const profile = profileForMast(site, mastM);
+export function earthMaskFor(site: Site, profile: readonly number[]): Uint8Array {
   return Uint8Array.from(site.hours, (hour) =>
     isAbove(profile, hour.earthAz, hour.earthEl) ? 1 : 0,
   );
+}
+
+export function litMask(site: Site, mastM: Plan['mastM']): Uint8Array {
+  return litMaskFor(site, profileForMast(site, mastM));
+}
+
+export function earthMask(site: Site, mastM: Plan['mastM']): Uint8Array {
+  return earthMaskFor(site, profileForMast(site, mastM));
 }
