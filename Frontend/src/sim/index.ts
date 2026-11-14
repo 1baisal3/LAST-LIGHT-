@@ -11,6 +11,7 @@ export {
 } from './battery';
 export { computeKpis, longestRun } from './kpis';
 export { simulate } from './simulate';
+export { validatePlan, type PlanError, type PlanErrorCode } from './validatePlan';
 export { findNearestStart } from './search';
 export { minCapacityFor } from './capacity';
 export { uncertainty, type Uncertainty } from './uncertainty';

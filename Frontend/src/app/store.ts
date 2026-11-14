@@ -1,20 +1,30 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { useDispatch, useSelector, type TypedUseSelectorHook } from 'react-redux';
+import { datasetReducer } from '../features/datasets/datasetSlice';
 import { planReducer } from '../features/plan/planSlice';
 import { resultReducer } from '../features/result/resultSlice';
 import { viewReducer } from '../features/timeline/viewSlice';
 import { baseApi } from '../shared/api/baseApi';
+import { createSimListener, routeResponse } from './listener';
+import { createSimClient, type SimClient } from './worker/client';
 
-export function makeStore() {
-  return configureStore({
+export function makeStore(client: SimClient = createSimClient()) {
+  const listener = createSimListener(client);
+
+  const store = configureStore({
     reducer: {
+      dataset: datasetReducer,
       plan: planReducer,
       result: resultReducer,
       view: viewReducer,
       [baseApi.reducerPath]: baseApi.reducer,
     },
-    middleware: (getDefault) => getDefault().concat(baseApi.middleware),
+    middleware: (getDefault) => getDefault().prepend(listener.middleware).concat(baseApi.middleware),
   });
+
+  client.subscribe(routeResponse(store.dispatch));
+
+  return store;
 }
 
 export const store = makeStore();
