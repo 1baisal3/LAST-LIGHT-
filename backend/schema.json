@@ -2,7 +2,7 @@
     "openapi": "3.0.3",
     "info": {
         "title": "Last Light API",
-        "version": "1.0.0",
+        "version": "1.1.0",
         "description": "Lunar mission engineering simulations, recovery plans and private scenario history."
     },
     "paths": {
@@ -134,7 +134,7 @@
         "/api/mission/": {
             "post": {
                 "operationId": "api_mission_create",
-                "description": "Simulate 24 hourly intervals, including Sun/Earth azimuths and a 36-point horizon_profile. disaster_mode (alias worst_case_override) injects a solar-storm-v1 stress test with blackout, lasting electrical panel damage and critical-load shedding. It forces bounded Fix Plan with doubled reserve thresholds (10% minimum, 90% cap), irrespective of auto_resolve. threat_status labels the event as a manual scenario, not a JPL prediction. Source mode is selected by the server. Optional throttling returns 429 with Retry-After.",
+                "description": "Simulate 1–168 continuous hourly intervals (duration_hours, default 24), including Sun/Earth azimuths and a 36-point horizon_profile. Seven-day clients send duration_hours=168. disaster_mode injects a manual solar-storm-v1 stress test and forces bounded Fix Plan with stricter reserves. Source mode is selected by the server. Optional throttling returns 429 with Retry-After.",
                 "tags": [
                     "Mission"
                 ],
@@ -946,6 +946,11 @@
                         "type": "string",
                         "format": "date"
                     },
+                    "duration_hours": {
+                        "type": "integer",
+                        "maximum": 168,
+                        "minimum": 1
+                    },
                     "timezone": {
                         "$ref": "#/components/schemas/TimezoneEnum"
                     },
@@ -960,8 +965,8 @@
                         "items": {
                             "$ref": "#/components/schemas/HourlySample"
                         },
-                        "maxItems": 24,
-                        "minItems": 24
+                        "maxItems": 168,
+                        "minItems": 1
                     },
                     "horizon_profile": {
                         "type": "array",
@@ -975,6 +980,7 @@
                 },
                 "required": [
                     "date",
+                    "duration_hours",
                     "fix_plan",
                     "horizon_profile",
                     "hourly_data",
@@ -1006,6 +1012,13 @@
                         "type": "string",
                         "format": "date",
                         "description": "UTC calendar date in YYYY-MM-DD format, years 1900 through 2100."
+                    },
+                    "duration_hours": {
+                        "type": "integer",
+                        "maximum": 168,
+                        "minimum": 1,
+                        "default": 24,
+                        "description": "Continuous hourly simulation; use 168 for a seven-day mission. Defaults to 24 for existing API clients."
                     },
                     "battery_capacity_wh": {
                         "type": "number",
@@ -1392,7 +1405,7 @@
                     },
                     "thermal_violation_hours": {
                         "type": "integer",
-                        "maximum": 24,
+                        "maximum": 168,
                         "minimum": 0
                     },
                     "critical_charge_percent": {
@@ -1405,7 +1418,7 @@
                     },
                     "communications_blackout_hours": {
                         "type": "integer",
-                        "maximum": 24,
+                        "maximum": 168,
                         "minimum": 0
                     },
                     "risk_multiplier": {
@@ -1623,7 +1636,7 @@
                     },
                     "communications_blackout_hours": {
                         "type": "integer",
-                        "maximum": 24,
+                        "maximum": 168,
                         "minimum": 0
                     },
                     "fix_plan_forced": {

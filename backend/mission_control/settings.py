@@ -91,6 +91,8 @@ CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
 ]
 
 AUTH_USER_MODEL = "accounts.User"
@@ -108,7 +110,7 @@ REST_FRAMEWORK = {
 SPECTACULAR_SETTINGS = {
     "TITLE": "Last Light API",
     "DESCRIPTION": "Lunar mission engineering simulations, recovery plans and private scenario history.",
-    "VERSION": "1.0.0",
+    "VERSION": "1.1.0",
     "SERVE_INCLUDE_SCHEMA": False,
     "COMPONENT_SPLIT_REQUEST": True,
     "SERVE_PERMISSIONS": ["rest_framework.permissions.AllowAny"],

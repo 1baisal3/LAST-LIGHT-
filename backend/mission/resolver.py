@@ -53,7 +53,7 @@ def assess_risk(result, critical_charge_percent=5, minimum_survival_percent=100)
     }
 
 
-def recovery_candidates(latitude, longitude, start_date):
+def recovery_candidates(latitude, longitude, start_date, duration_hours=24):
     geod = Geod(a=MOON_RADIUS_M, b=MOON_RADIUS_M)
     for distance in (500, 1000):
         for azimuth in (0, 90, 180, 270):
@@ -65,7 +65,7 @@ def recovery_candidates(latitude, longitude, start_date):
             }
     for delay in (1, 3, 7):
         candidate_date = start_date + timedelta(days=delay)
-        if candidate_date.year <= 2100:
+        if (candidate_date + timedelta(hours=duration_hours - 1)).year <= 2100:
             yield {
                 'type': 'alternative_window', 'latitude': latitude, 'longitude': longitude,
                 'date': candidate_date.isoformat(), 'distance_m': 0.0, 'delay_days': delay,
@@ -80,7 +80,7 @@ def find_fix_plan(*, result, evaluate, critical_charge_percent=5,
         'status': 'not_needed' if risk['is_safe'] else 'disabled',
         'recommendation': None, 'attempts': [], 'evaluated_candidates': 0,
         'search_complete': risk['is_safe'],
-        'scope': 'Prelaunch replanning of a 24-hour simulation; transit and waiting survival are not calculated.',
+        'scope': f"Prelaunch replanning of a {len(result['hourly_data'])}-hour simulation; transit and waiting survival are not calculated.",
         'forced': force_search,
         'trigger': 'disaster_mode' if force_search else 'none' if risk['is_safe'] else 'unsafe_scenario',
     }
@@ -91,6 +91,7 @@ def find_fix_plan(*, result, evaluate, critical_charge_percent=5,
     plan['search_complete'] = False
     candidates = list(recovery_candidates(
         result['latitude'], result['longitude'], date.fromisoformat(result['date']),
+        duration_hours=len(result['hourly_data']),
     ))
     for index, candidate in enumerate(candidates):
         if index >= settings.FIX_PLAN_MAX_CANDIDATES or clock() >= deadline:

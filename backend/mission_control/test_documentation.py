@@ -46,8 +46,9 @@ class DocumentationTests(SimpleTestCase):
         self.assertEqual(request['properties']['longitude']['maximum'], 180)
         self.assertIn('auto_resolve', request['properties'])
         response = schemas['MissionResponse']['properties']
-        self.assertEqual(response['hourly_data']['minItems'], 24)
-        self.assertEqual(response['hourly_data']['maxItems'], 24)
+        self.assertEqual(response['hourly_data']['minItems'], 1)
+        self.assertEqual(response['hourly_data']['maxItems'], 168)
+        self.assertIn('duration_hours', response)
         self.assertIn('risk', response)
         plan = response['fix_plan']['properties']
         self.assertIn('found', plan['status']['enum'])

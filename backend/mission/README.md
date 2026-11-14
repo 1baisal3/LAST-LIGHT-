@@ -7,6 +7,7 @@
   "latitude": -89.5,
   "longitude": 32.0,
   "date": "2026-11-14",
+  "duration_hours": 168,
   "battery_capacity_wh": 1000,
   "initial_charge_percent": 100,
   "mast_height_m": 2,
@@ -22,8 +23,11 @@
 
 Only latitude, longitude and date are required. Latitude is -90..90 degrees,
 longitude -180..180 degrees, positive east, in the lunar mean Earth/polar frame.
-Dates are `YYYY-MM-DD`, years 1900..2100. Each successful response has 24
-`hourly_data` samples, starting at 00:00..23:00 UTC. Each sample includes
+Dates are `YYYY-MM-DD`, years 1900..2100. Set `duration_hours: 168` for a seven-day
+mission; values from 1 to 168 are supported. Omitting it retains the 24-hour
+default for existing clients. Each response contains exactly `duration_hours`
+consecutive `hourly_data` samples starting at 00:00 UTC. Battery, thermal and dust
+state continue across midnight. The full window must end before 2101. Each sample includes
 `sun_azimuth_deg` and `earth_azimuth_deg` in degrees clockwise from north,
 normalized to `[0, 360)`. Scenarios are
 saved separately through `/api/scenarios/`.
@@ -43,7 +47,7 @@ the 10-degree display grid. In external mode, the DEM must cover the entire
 360-degree profile; missing coverage or NoData returns 422.
 
 `MissionResponseSerializer` validates the complete runtime response, including
-all required fields, 24 samples, both azimuths, finite numbers and the ordered
+all required fields, the requested sample count, consecutive UTC timestamps, both azimuths, finite numbers and the ordered
 horizon grid. Invalid internal output returns 500 instead of a malformed 200.
 The same serializers describe the Swagger response contract.
 
@@ -114,7 +118,7 @@ failures remain unsafe even when that threshold is lowered.
 The resolver tests a discrete grid: four cardinal bearings at 500 m and 1000 m
 using lunar great-circle distances, then the same point at +1, +3 and +7 days.
 Each candidate uses the same hardware and initial state as the original request
-and is fully resimulated for 24 hours. The first candidate satisfying all safety
+and is fully resimulated for the same requested duration. The first candidate satisfying all safety
 checks is returned as `safe_haven` or `alternative_window`, with coordinates,
 date, distance and risk metrics. Requested dates never exceed the supported range.
 

@@ -26,7 +26,7 @@ class MissionSimulationView(APIView):
                    401: {'description': 'JWT authentication required.'},
                    422: SourceErrorSerializer, 429: ThrottleErrorSerializer, 502: SourceErrorSerializer,
                    503: SourceErrorSerializer, 504: SourceErrorSerializer},
-        description='Simulate 24 hourly intervals, including Sun/Earth azimuths and a 36-point horizon_profile. disaster_mode (alias worst_case_override) injects a solar-storm-v1 stress test with blackout, lasting electrical panel damage and critical-load shedding. It forces bounded Fix Plan with doubled reserve thresholds (10% minimum, 90% cap), irrespective of auto_resolve. threat_status labels the event as a manual scenario, not a JPL prediction. Source mode is selected by the server. Optional throttling returns 429 with Retry-After.',
+        description='Simulate 1–168 continuous hourly intervals (duration_hours, default 24), including Sun/Earth azimuths and a 36-point horizon_profile. Seven-day clients send duration_hours=168. disaster_mode injects a manual solar-storm-v1 stress test and forces bounded Fix Plan with stricter reserves. Source mode is selected by the server. Optional throttling returns 429 with Retry-After.',
     )
     def post(self, request):
         serializer = MissionSimulationSerializer(data=request.data)

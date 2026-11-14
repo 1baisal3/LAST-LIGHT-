@@ -111,13 +111,13 @@ def build_fallback_schema():
     ):
         value = operation(
             operation_id, tag,
-            '24-hour simulation and bounded recovery search. Safe havens are within 1 km; alternative windows are +1/+3/+7 days. '
+            '1–168-hour simulation (duration_hours, default 24) and bounded recovery search. Safe havens are within 1 km; alternative windows are +1/+3/+7 days. '
             'Survival is a safe-hour fraction, not a probability; transit and waiting survival are not simulated.',
             request='MissionRequest', response=response,
         )
         if response == 'MissionResponse':
             value['description'] += (
-                ' Returns 24 hourly samples including sun_azimuth_deg and earth_azimuth_deg, plus a static '
+                ' Returns duration_hours consecutive samples including sun_azimuth_deg and earth_azimuth_deg, plus a static '
                 '36-point horizon_profile with azimuth_deg and elevation_deg, sampled every 10 degrees. '
                 'model.data_mode identifies synthetic-v1, external or injected sources.'
             )
@@ -174,7 +174,7 @@ def build_fallback_schema():
             paths[detail][method] = value
     return {
         'openapi': '3.0.3',
-        'info': {'title': 'Last Light API', 'version': '1.0.0', 'description': 'Lunar mission engineering simulations and private history.'},
+        'info': {'title': 'Last Light API', 'version': '1.1.0', 'description': 'Lunar mission engineering simulations and private history.'},
         'paths': paths,
         'components': {'schemas': components, 'securitySchemes': {
             'jwtAuth': {'type': 'http', 'scheme': 'bearer', 'bearerFormat': 'JWT'},

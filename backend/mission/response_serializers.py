@@ -1,4 +1,5 @@
 import math
+from datetime import datetime, time, timedelta, timezone
 
 from rest_framework import serializers
 from .providers import HORIZON_PROFILE_AZIMUTHS
@@ -26,10 +27,10 @@ class RiskSerializer(ResponseContractSerializer):
     survival_percent = serializers.FloatField(min_value=0, max_value=100)
     survival_definition = serializers.CharField()
     unserved_energy_wh = serializers.FloatField(min_value=0)
-    thermal_violation_hours = serializers.IntegerField(min_value=0, max_value=24)
+    thermal_violation_hours = serializers.IntegerField(min_value=0, max_value=168)
     critical_charge_percent = serializers.FloatField()
     minimum_survival_percent = serializers.FloatField()
-    communications_blackout_hours = serializers.IntegerField(min_value=0, max_value=24)
+    communications_blackout_hours = serializers.IntegerField(min_value=0, max_value=168)
     risk_multiplier = serializers.FloatField(min_value=1)
 
 
@@ -72,7 +73,7 @@ class ThreatStatusSerializer(ResponseContractSerializer):
     panel_damage_rate_per_hour = serializers.FloatField(min_value=0)
     critical_load_fraction = serializers.FloatField(min_value=0, max_value=1)
     disabled_systems = serializers.ListField(child=serializers.CharField())
-    communications_blackout_hours = serializers.IntegerField(min_value=0, max_value=24)
+    communications_blackout_hours = serializers.IntegerField(min_value=0, max_value=168)
     fix_plan_forced = serializers.BooleanField()
     is_observed_event = serializers.BooleanField()
     assumptions = serializers.ListField(child=serializers.CharField())
@@ -142,10 +143,11 @@ class MissionResponseSerializer(FixPlanResponseSerializer):
     latitude = serializers.FloatField()
     longitude = serializers.FloatField()
     date = serializers.DateField()
+    duration_hours = serializers.IntegerField(min_value=1, max_value=168)
     timezone = serializers.ChoiceField(choices=['UTC'])
     is_placeholder = serializers.BooleanField()
     model = ModelMetadataSerializer()
-    hourly_data = serializers.ListField(child=HourlySampleSerializer(), min_length=24, max_length=24)
+    hourly_data = serializers.ListField(child=HourlySampleSerializer(), min_length=1, max_length=168)
     horizon_profile = serializers.ListField(
         child=HorizonPointSerializer(), min_length=36, max_length=36,
         help_text='Static 360-degree horizon at the landing site, sampled every 10 degrees. Individual hourly visibility uses exact target bearings.',
@@ -155,6 +157,16 @@ class MissionResponseSerializer(FixPlanResponseSerializer):
         if [point['azimuth_deg'] for point in value] != list(HORIZON_PROFILE_AZIMUTHS):
             raise serializers.ValidationError('Expected the ordered azimuth grid 0, 10, ..., 350 degrees.')
         return value
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        rows = attrs['hourly_data']
+        if len(rows) != attrs['duration_hours']:
+            raise serializers.ValidationError({'hourly_data': 'Expected exactly duration_hours samples.'})
+        start = datetime.combine(attrs['date'], time.min, tzinfo=timezone.utc)
+        if any(row['timestamp'] != start + timedelta(hours=index) for index, row in enumerate(rows)):
+            raise serializers.ValidationError({'hourly_data': 'Expected consecutive hourly UTC timestamps.'})
+        return attrs
 
 
 class SourceErrorSerializer(serializers.Serializer):

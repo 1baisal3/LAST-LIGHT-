@@ -31,11 +31,12 @@ def parse_observer_table(result, epochs):
         body, _ = body.split('$$EOE', 1)
         columns = next(
             next(csv.reader([line])) for line in reversed(header.splitlines())
-            if 'Azi_' in line and 'Elev_' in line and ',' in line
+            if any(name in line for name in ('Azi_', 'Azimuth_'))
+            and any(name in line for name in ('Elev_', 'Elevation_')) and ',' in line
         )
         columns = [column.strip() for column in columns]
-        az_index = next(i for i, value in enumerate(columns) if value.startswith('Azi_'))
-        el_index = next(i for i, value in enumerate(columns) if value.startswith('Elev_'))
+        az_index = next(i for i, value in enumerate(columns) if value.startswith(('Azi_', 'Azimuth_')))
+        el_index = next(i for i, value in enumerate(columns) if value.startswith(('Elev_', 'Elevation_')))
         range_index = columns.index('delta')
         rows = [row for row in csv.reader(body.strip().splitlines()) if row and row[0].strip()]
         if len(rows) != len(epochs):
@@ -77,6 +78,11 @@ class JPLHorizonsProvider:
             'EXTRA_PREC': "'YES'", 'RANGE_UNITS': "'AU'",
             'ELEV_CUT': "'-90'", 'SKIP_DAYLT': "'NO'", 'R_T_S_ONLY': "'NO'",
         }
+        # Keep a week of hourly data to two requests without exceeding URL limits.
+        if len(epochs) > 24 and all(abs((right - left) - 1 / 24) < 1e-8 for left, right in zip(epochs, epochs[1:])):
+            del params['TLIST']
+            del params['TLIST_TYPE']
+            params.update(START_TIME=f"'JD{epochs[0]:.9f}'", STOP_TIME=f"'JD{epochs[-1]:.9f}'", STEP_SIZE="'1 h'")
         key = 'horizons:v2:' + hashlib.sha256(json.dumps(params, sort_keys=True).encode()).hexdigest()
         store = EphemerisStore(settings.EPHEMERIS_STORE_PATH)
         cached = cache.get(key)

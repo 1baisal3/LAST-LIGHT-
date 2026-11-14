@@ -4,7 +4,8 @@ from django.test import SimpleTestCase, override_settings
 @override_settings(ALLOWED_HOSTS=['testserver'])
 class LocalFrontendCORSTests(SimpleTestCase):
     def test_local_origins_allow_authorized_api_preflight(self):
-        for origin in ('http://localhost:3000', 'http://127.0.0.1:3000'):
+        for origin in ('http://localhost:3000', 'http://127.0.0.1:3000',
+                       'http://localhost:5173', 'http://127.0.0.1:5173'):
             with self.subTest(origin=origin):
                 response = self.client.options(
                     '/api/scenarios/',

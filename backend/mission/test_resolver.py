@@ -128,3 +128,8 @@ class FixPlanTests(SimpleTestCase):
     def test_last_supported_date_never_proposes_an_invalid_window(self):
         candidates = list(recovery_candidates(0, 0, date(2100, 12, 31)))
         self.assertEqual(len(candidates), 8)
+
+    def test_last_supported_week_never_proposes_a_window_ending_in_2101(self):
+        candidates = list(recovery_candidates(0, 0, date(2100, 12, 25), duration_hours=168))
+        self.assertEqual(len(candidates), 8)
+        self.assertTrue(all(candidate['delay_days'] == 0 for candidate in candidates))

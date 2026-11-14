@@ -17,11 +17,13 @@ from .threats import DisasterScenario
 
 
 def simulate_mission(*, latitude: float, longitude: float, date: date,
-                     ephemeris=None, terrain=None, disaster_mode=False, threat=None, **options) -> dict:
+                     ephemeris=None, terrain=None, disaster_mode=False, threat=None, duration_hours=24, **options) -> dict:
+    if isinstance(duration_hours, bool) or not isinstance(duration_hours, int) or not 1 <= duration_hours <= 168:
+        raise ValueError('Duration must be an integer from 1 to 168 hours.')
     parameters = SimulationParameters(**options)
     threat = threat if threat is not None else DisasterScenario.for_mission(disaster_mode, date)
     start = datetime.combine(date, time.min, tzinfo=timezone.utc)
-    timestamps = [start + timedelta(hours=hour) for hour in range(24)]
+    timestamps = [start + timedelta(hours=hour) for hour in range(duration_hours)]
     with ExitStack() as stack:
         mode = resolve_data_mode()
         if terrain is None:
@@ -39,8 +41,8 @@ def simulate_mission(*, latitude: float, longitude: float, date: date,
         elevation = terrain.elevation_m(latitude, longitude)
         site = LandingSite(latitude, longitude, elevation + parameters.mast_height_m)
         geometries = ephemeris.geometries(site, timestamps)
-        if len(geometries) != 24:
-            raise HorizonsError('JPL Horizons returned an incomplete day.')
+        if len(geometries) != duration_hours:
+            raise HorizonsError('JPL Horizons returned an incomplete mission window.')
         temperature = parameters.initial_temperature_c
         charge_wh = parameters.battery_capacity_wh * parameters.initial_charge_percent / 100
         hourly_data = []
@@ -94,6 +96,7 @@ def simulate_mission(*, latitude: float, longitude: float, date: date,
         data_mode = provider_mode(terrain, ephemeris)
         return {
             'latitude': latitude, 'longitude': longitude, 'date': date.isoformat(),
+            'duration_hours': duration_hours,
             'timezone': 'UTC', 'is_placeholder': data_mode == 'synthetic-v1',
             'horizon_profile': horizon_profile,
             'threat_status': threat.summary(timestamps),

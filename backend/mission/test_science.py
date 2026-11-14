@@ -77,6 +77,27 @@ class HorizonsTests(SimpleTestCase):
         with self.assertRaises(ValueError):
             julian_date(datetime(2026, 1, 1))
 
+    def test_actual_jpl_long_column_names_and_legacy_names_are_supported(self):
+        epochs = [julian_date(value) for value in self.times]
+        legacy = observer_table(epochs)
+        actual = legacy.replace('Azi_(a-app)', 'Azimuth_(a-app)').replace('Elev_(a-app)', 'Elevation_(a-app)')
+        self.assertEqual(parse_observer_table(actual, epochs), parse_observer_table(legacy, epochs))
+
+    def test_seven_day_request_uses_a_short_hourly_range_for_each_target(self):
+        times = [self.times[0] + timedelta(hours=hour) for hour in range(168)]
+        epochs = [julian_date(value) for value in times]
+        self.session.get.side_effect = None
+        self.session.get.return_value.json.return_value = {'result': observer_table(epochs)}
+        rows = JPLHorizonsProvider(session=self.session).geometries(self.site, times)
+        self.assertEqual(len(rows), 168)
+        self.assertEqual(self.session.get.call_count, 2)
+        for call in self.session.get.call_args_list:
+            parameters = call.kwargs['params']
+            self.assertNotIn('TLIST', parameters)
+            self.assertEqual(parameters['STEP_SIZE'], "'1 h'")
+            self.assertEqual(parameters['START_TIME'], f"'JD{epochs[0]:.9f}'")
+            self.assertEqual(parameters['STOP_TIME'], f"'JD{epochs[-1]:.9f}'")
+
     def test_corrupt_cached_ephemeris_is_rejected(self):
         from django.conf import settings
         provider = JPLHorizonsProvider(session=self.session)

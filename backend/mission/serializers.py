@@ -1,4 +1,5 @@
 import math
+from datetime import timedelta
 
 from rest_framework import serializers
 
@@ -7,6 +8,7 @@ class MissionSimulationSerializer(serializers.Serializer):
     latitude = serializers.FloatField(min_value=-90, max_value=90)
     longitude = serializers.FloatField(min_value=-180, max_value=180)
     date = serializers.DateField(input_formats=['%Y-%m-%d'], help_text='UTC calendar date in YYYY-MM-DD format, years 1900 through 2100.')
+    duration_hours = serializers.IntegerField(min_value=1, max_value=168, default=24, help_text='Continuous hourly simulation; use 168 for a seven-day mission. Defaults to 24 for existing API clients.')
     battery_capacity_wh = serializers.FloatField(min_value=0.01, max_value=1e9, default=1000)
     initial_charge_percent = serializers.FloatField(min_value=0, max_value=100, default=100)
     mast_height_m = serializers.FloatField(min_value=0, max_value=100, default=2)
@@ -34,6 +36,8 @@ class MissionSimulationSerializer(serializers.Serializer):
         return value
 
     def validate(self, attrs):
+        if (attrs['date'] + timedelta(hours=attrs['duration_hours'] - 1)).year > 2100:
+            raise serializers.ValidationError({'duration_hours': 'The mission must end before 2101.'})
         if 'worst_case_override' in attrs:
             override = attrs.pop('worst_case_override')
             if 'disaster_mode' in self.initial_data and attrs['disaster_mode'] != override:
