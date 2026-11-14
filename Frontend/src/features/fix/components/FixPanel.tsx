@@ -4,9 +4,11 @@ import { getLang, t } from '../../../shared/i18n';
 import { BatteryFix } from './BatteryFix';
 import { DateFix } from './DateFix';
 import { HeaterFix } from './HeaterFix';
+import { MastFix } from './MastFix';
+import { UncertaintyFix } from './UncertaintyFix';
 import styles from './FixPanel.module.css';
 
-type TabId = 'date' | 'battery' | 'heater';
+type TabId = 'date' | 'battery' | 'heater' | 'mast' | 'uncertainty';
 
 export function FixPanel() {
   const lang = getLang();
@@ -14,11 +16,16 @@ export function FixPanel() {
   const resultStatus = useAppSelector((state) => state.result.status);
   const windowStart = useAppSelector((state) => state.dataset.dataset?.sites.window.start ?? null);
   const capabilities = useAppSelector((state) => state.dataset.dataset?.provenance.capabilities ?? null);
+  const site = useAppSelector((state) =>
+    state.dataset.dataset?.sites.sites.find((item) => item.id === state.plan.plan.siteId) ?? null,
+  );
   const [chosen, setChosen] = useState<TabId>('date');
 
   const tabs: TabId[] = ['date'];
   if (capabilities?.minCapacity) tabs.push('battery');
   if (capabilities?.heater) tabs.push('heater');
+  if (site?.horizonByMast) tabs.push('mast');
+  if (capabilities?.uncertainty && site?.horizonClones?.length) tabs.push('uncertainty');
   const active: TabId = tabs.includes(chosen) ? chosen : 'date';
   const ready = result !== null && windowStart !== null && resultStatus !== 'running';
   const title = t('fix.title', lang);
@@ -37,6 +44,10 @@ export function FixPanel() {
       <BatteryFix lang={lang} ready={ready} />
     ) : active === 'heater' ? (
       <HeaterFix lang={lang} ready={ready} />
+    ) : active === 'mast' ? (
+      <MastFix lang={lang} ready={ready} />
+    ) : active === 'uncertainty' ? (
+      <UncertaintyFix lang={lang} ready={ready} />
     ) : (
       <DateFix lang={lang} ready={ready} />
     );
