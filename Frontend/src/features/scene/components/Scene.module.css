@@ -1,0 +1,209 @@
+.scene {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.title {
+  margin: 0;
+  font-size: 15px;
+}
+
+.svg {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+  display: block;
+}
+
+.loading {
+  opacity: 0.4;
+}
+
+.sky {
+  fill: #10141d;
+  transition: fill var(--t-scene, 600ms) ease;
+}
+
+.scene_failed .sky,
+.scene_dimming .sky {
+  fill: #07080c;
+}
+
+.sunDisc {
+  fill: var(--color-sun);
+}
+
+.sunHalo {
+  fill: none;
+  stroke: var(--color-sun);
+  stroke-opacity: 0.35;
+  stroke-width: 3;
+}
+
+.earthDisc {
+  fill: var(--color-earth);
+}
+
+.earthLand {
+  fill: var(--color-ok);
+}
+
+.earth {
+  opacity: 1;
+  transition: opacity var(--t-scene, 600ms) ease;
+}
+
+.earthHidden {
+  opacity: 0.12;
+}
+
+.farHills {
+  fill: #1c2230;
+}
+
+.nearHills {
+  fill: #262d3d;
+}
+
+.lander {
+  transition: opacity var(--t-scene, 600ms) ease;
+}
+
+.panel {
+  fill: #2f5f9e;
+  transition: fill var(--t-scene, 600ms) ease;
+}
+
+.lander_charging .panel {
+  fill: var(--color-sun);
+}
+
+.lander_working .panel {
+  fill: #4a86d4;
+}
+
+.lander_danger .panel,
+.lander_noEarth .panel {
+  fill: #8a6a2a;
+}
+
+.lander_dimming .panel,
+.lander_failed .panel {
+  fill: #2a2f3a;
+}
+
+.lander_failed {
+  opacity: 0.55;
+}
+
+.body {
+  fill: #c9cfdc;
+}
+
+.strut {
+  stroke: #c9cfdc;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.beacon {
+  fill: var(--color-ok);
+}
+
+.beaconAlert {
+  fill: var(--color-fail);
+}
+
+.lander_failed .beacon,
+.lander_failed .beaconAlert,
+.lander_dimming .beacon,
+.lander_dimming .beaconAlert {
+  fill: #3a3f4c;
+}
+
+.light {
+  fill: var(--color-sun);
+}
+
+.lightOut {
+  animation: lightOut 150ms ease forwards;
+}
+
+@keyframes lightOut {
+  from {
+    fill: var(--color-sun);
+  }
+
+  to {
+    fill: #2a2f3a;
+  }
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius);
+  border: 1px solid var(--color-muted);
+  justify-self: start;
+  transition:
+    border-color var(--t-scene, 600ms) ease,
+    color var(--t-scene, 600ms) ease;
+}
+
+.badgeIcon {
+  font-family: var(--font-num);
+  font-weight: 700;
+}
+
+.badgeText {
+  display: grid;
+}
+
+.badgeNote {
+  color: var(--color-muted);
+  font-size: 12px;
+}
+
+.badge_failed,
+.badge_dimming {
+  border-color: var(--color-fail);
+  color: var(--color-fail);
+}
+
+.badge_danger,
+.badge_noEarth {
+  border-color: var(--color-sun);
+  color: var(--color-sun);
+}
+
+.badge_charging,
+.badge_working {
+  border-color: var(--color-ok);
+  color: var(--color-ok);
+}
+
+.caption {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sky,
+  .earth,
+  .lander,
+  .panel,
+  .badge {
+    transition: none;
+  }
+
+  .lightOut {
+    animation: none;
+    fill: #2a2f3a;
+  }
+}
