@@ -1,82 +1,66 @@
-import { useEffect, useRef } from 'react';
-import { useAppDispatch, useAppSelector } from '../../../app/store';
-import { getLang, t, tf } from '../../../shared/i18n';
-import { addHours, formatDate } from '../../../shared/lib/format';
-import { planPatched } from '../../plan/planSlice';
-import { hourSelected } from '../../timeline/viewSlice';
-import { fixApplied, fixSearchRequested } from '../fixSlice';
-import { CompareCard } from './CompareCard';
+import { useState, type KeyboardEvent } from 'react';
+import { useAppSelector } from '../../../app/store';
+import { getLang, t } from '../../../shared/i18n';
+import { BatteryFix } from './BatteryFix';
+import { DateFix } from './DateFix';
 import styles from './FixPanel.module.css';
 
+type TabId = 'date' | 'battery';
+
 export function FixPanel() {
-  const dispatch = useAppDispatch();
   const lang = getLang();
-  const fix = useAppSelector((state) => state.fix);
   const result = useAppSelector((state) => state.result.result);
   const resultStatus = useAppSelector((state) => state.result.status);
-  const plan = useAppSelector((state) => state.plan.plan);
   const windowStart = useAppSelector((state) => state.dataset.dataset?.sites.window.start ?? null);
-  const statusRef = useRef<HTMLParagraphElement>(null);
+  const capabilities = useAppSelector((state) => state.dataset.dataset?.provenance.capabilities ?? null);
+  const [chosen, setChosen] = useState<TabId>('date');
 
-  useEffect(() => {
-    if (fix.status === 'applied') statusRef.current?.focus();
-  }, [fix.status]);
-
-  const title = t('fix.title', lang);
+  const tabs: TabId[] = capabilities?.minCapacity ? ['date', 'battery'] : ['date'];
+  const active: TabId = tabs.includes(chosen) ? chosen : 'date';
   const ready = result !== null && windowStart !== null && resultStatus !== 'running';
-  const searching = fix.status === 'searching';
+  const title = t('fix.title', lang);
 
-  const apply = () => {
-    if (fix.status !== 'found' || !fix.preview) return;
-    const { startIndex } = fix.preview;
-    dispatch(planPatched({ startIndex }));
-    dispatch(hourSelected(0));
-    dispatch(fixApplied({ startIndex }));
+  const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+    event.preventDefault();
+    const step = event.key === 'ArrowRight' ? 1 : -1;
+    const next = tabs[(tabs.indexOf(active) + step + tabs.length) % tabs.length]!;
+    setChosen(next);
+    document.getElementById(`fix-tab-${next}`)?.focus();
   };
 
-  let message: string | null = null;
-  if (!ready && fix.status === 'idle') message = t('fix.needResult', lang);
-  if (searching) message = t('fix.searching', lang);
-  if (fix.status === 'same') message = t('fix.same', lang);
-  if (fix.status === 'none') message = t('fix.none', lang);
-  if (fix.status === 'error') message = t('fix.error', lang);
-  if (fix.status === 'applied' && fix.appliedStart !== null && windowStart) {
-    message = tf('fix.applied', { date: formatDate(addHours(windowStart, fix.appliedStart), lang) }, lang);
-  }
+  const body =
+    active === 'battery' ? <BatteryFix lang={lang} ready={ready} /> : <DateFix lang={lang} ready={ready} />;
 
   return (
-    <section className={styles.panel} aria-label={title} aria-busy={searching}>
+    <section className={styles.panel} aria-label={title}>
       <h2 className={styles.title}>{title}</h2>
-      <p className={styles.hint}>{t('fix.dateHint', lang)}</p>
-      <button
-        type="button"
-        className={styles.search}
-        disabled={!ready || searching}
-        onClick={() => dispatch(fixSearchRequested())}
-      >
-        {t('fix.find', lang)}
-      </button>
-      <p
-        ref={statusRef}
-        className={fix.status === 'none' || fix.status === 'error' ? `${styles.status} ${styles.bad}` : styles.status}
-        role="status"
-        tabIndex={-1}
-      >
-        {message}
-      </p>
-      {fix.status === 'found' && fix.preview && result && windowStart ? (
-        <div className={styles.found}>
-          <CompareCard
-            before={{ startIndex: plan.startIndex, result }}
-            after={fix.preview}
-            windowStart={windowStart}
-            lang={lang}
-          />
-          <button type="button" className={styles.apply} onClick={apply}>
-            {t('fix.apply', lang)}
-          </button>
-        </div>
-      ) : null}
+      {tabs.length > 1 ? (
+        <>
+          <div className={styles.tabs} role="tablist" aria-label={title} onKeyDown={onKeyDown}>
+            {tabs.map((tab) => (
+              <button
+                key={tab}
+                id={`fix-tab-${tab}`}
+                type="button"
+                role="tab"
+                className={styles.tab}
+                aria-selected={tab === active}
+                aria-controls={`fix-panel-${tab}`}
+                tabIndex={tab === active ? 0 : -1}
+                onClick={() => setChosen(tab)}
+              >
+                {t(`fix.tab.${tab}`, lang)}
+              </button>
+            ))}
+          </div>
+          <div id={`fix-panel-${active}`} role="tabpanel" aria-labelledby={`fix-tab-${active}`}>
+            {body}
+          </div>
+        </>
+      ) : (
+        body
+      )}
     </section>
   );
 }

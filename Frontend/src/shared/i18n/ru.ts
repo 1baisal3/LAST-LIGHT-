@@ -175,6 +175,20 @@ export const ru = {
   'fix.rowOutcome': 'Итог',
   'fix.outcomeOk': 'выживает',
   'fix.outcomeFail': 'отказ на {hour}-м часу, {reason}',
+  'fix.tab.date': 'Дата',
+  'fix.tab.battery': 'Батарея',
+  'fix.wh': '{value} Вт·ч',
+  'fix.rowCapacity': 'Ёмкость батареи',
+  'fix.capacityHint': 'Минимальная ёмкость батареи, при которой аппарат выживает с той же датой, площадкой и нагрузкой',
+  'fix.capacityFind': 'Рассчитать ёмкость',
+  'fix.capacitySearching': 'Считаем минимальную ёмкость…',
+  'fix.capacityMore': 'Нужна батарея {need} (сейчас {now})',
+  'fix.capacityLess': 'Хватит батареи {need} (сейчас {now}). Можно уменьшить',
+  'fix.capacityExact': 'Текущей батареи ровно хватает',
+  'fix.capacityEarth': 'Ёмкость не поможет: отказ по связи с Землёй',
+  'fix.capacityAboveLimit': 'Нужна батарея больше {max}',
+  'fix.capacityApplied': 'Применено: батарея {value}',
+  'fix.capacityCaption': 'Сравнение: текущая и минимальная ёмкость',
 } as const;
 
 export type MessageKey = keyof typeof ru;

@@ -109,3 +109,37 @@
     min-height: 44px;
   }
 }
+
+.body {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.tabs {
+  display: flex;
+  gap: var(--space-1);
+  border-bottom: 1px solid var(--color-bg);
+}
+
+.tab {
+  min-height: 32px;
+  padding: var(--space-1) var(--space-2);
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--color-muted);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.tab[aria-selected='true'] {
+  border-bottom-color: var(--color-sun);
+  color: var(--color-text);
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--color-sun);
+  outline-offset: 2px;
+}

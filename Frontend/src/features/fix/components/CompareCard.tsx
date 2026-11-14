@@ -1,17 +1,19 @@
 import { t, tf, type Lang } from '../../../shared/i18n';
-import { addHours, formatDate, formatHours, formatPct } from '../../../shared/lib/format';
+import { formatHours, formatPct } from '../../../shared/lib/format';
 import type { Result } from '../../../sim/types';
 import styles from './FixPanel.module.css';
 
-export interface CompareSide {
-  startIndex: number;
-  result: Result;
+export interface CompareHead {
+  label: string;
+  before: string;
+  after: string;
 }
 
 interface Props {
-  before: CompareSide;
-  after: CompareSide;
-  windowStart: string;
+  head: CompareHead;
+  before: Result;
+  after: Result;
+  caption: string;
   lang: Lang;
 }
 
@@ -21,20 +23,18 @@ export function outcomeText(result: Result, lang: Lang): string {
   return tf('fix.outcomeFail', { hour: result.failure.hour, reason }, lang);
 }
 
-export function CompareCard({ before, after, windowStart, lang }: Props) {
-  const date = (side: CompareSide) => formatDate(addHours(windowStart, side.startIndex), lang);
-  const rows: Array<[string, (side: CompareSide) => string]> = [
-    [t('fix.rowDate', lang), date],
-    [t('fix.rowOutcome', lang), (side) => outcomeText(side.result, lang)],
-    [t('kpi.minBattery', lang), (side) => formatPct(side.result.kpis.minBatteryPct, lang, 0)],
-    [t('kpi.longestDark', lang), (side) => formatHours(side.result.kpis.longestDarkH, lang)],
-    [t('kpi.longestBlackout', lang), (side) => formatHours(side.result.kpis.longestBlackoutH, lang)],
-    [t('kpi.sunlit', lang), (side) => formatPct(side.result.kpis.sunlitPct, lang, 1)],
+export function CompareCard({ head, before, after, caption, lang }: Props) {
+  const rows: Array<[string, (result: Result) => string]> = [
+    [t('fix.rowOutcome', lang), (result) => outcomeText(result, lang)],
+    [t('kpi.minBattery', lang), (result) => formatPct(result.kpis.minBatteryPct, lang, 0)],
+    [t('kpi.longestDark', lang), (result) => formatHours(result.kpis.longestDarkH, lang)],
+    [t('kpi.longestBlackout', lang), (result) => formatHours(result.kpis.longestBlackoutH, lang)],
+    [t('kpi.sunlit', lang), (result) => formatPct(result.kpis.sunlitPct, lang, 1)],
   ];
 
   return (
     <table className={styles.compare}>
-      <caption className={styles.caption}>{t('fix.compareCaption', lang)}</caption>
+      <caption className={styles.caption}>{caption}</caption>
       <thead>
         <tr>
           <td />
@@ -43,6 +43,11 @@ export function CompareCard({ before, after, windowStart, lang }: Props) {
         </tr>
       </thead>
       <tbody>
+        <tr>
+          <th scope="row">{head.label}</th>
+          <td>{head.before}</td>
+          <td className={styles.after}>{head.after}</td>
+        </tr>
         {rows.map(([label, value]) => (
           <tr key={label}>
             <th scope="row">{label}</th>
