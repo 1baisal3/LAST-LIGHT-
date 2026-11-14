@@ -1,0 +1,19 @@
+:root {
+  --color-bg: #0b0d12;
+  --color-surface: #151922;
+  --color-text: #e8ebf2;
+  --color-muted: #8a93a6;
+  --color-sun: #f5b94a;
+  --color-earth: #4aa3f5;
+  --color-ok: #3ccf8e;
+  --color-fail: #f05454;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+
+  --radius: 8px;
+  --font: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-num: ui-monospace, 'SFMono-Regular', Consolas, monospace;
+}

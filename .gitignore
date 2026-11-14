@@ -1,0 +1,38 @@
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Frontend
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+*.local
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Django
+backend/db.sqlite3
+backend/media/
+backend/staticfiles/
+
+# Pipeline: скачанные продукты NASA и сборки
+backend/pipeline/cache/
+backend/pipeline/out/
+*.tif
+*.img
+
+# Secrets
+.env
+.env.*
+!.env.example
