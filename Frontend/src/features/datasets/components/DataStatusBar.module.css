@@ -1,0 +1,28 @@
+.status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+}
+
+.passed {
+  color: var(--color-muted);
+  font-size: 13px;
+}
+
+.sources {
+  min-height: 32px;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-muted);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.sources:focus-visible {
+  outline: 2px solid var(--color-sun);
+  outline-offset: 2px;
+}
