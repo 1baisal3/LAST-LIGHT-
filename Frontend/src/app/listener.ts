@@ -1,6 +1,14 @@
 import { createListenerMiddleware } from '@reduxjs/toolkit';
 import { calendarFailed, calendarReceived, calendarRejected, calendarStarted, type CalendarState } from '../features/calendar/calendarSlice';
 import { datasetActivated, type DatasetState } from '../features/datasets/datasetSlice';
+import {
+  fixFailed,
+  fixReceived,
+  fixRejected,
+  fixSearchRequested,
+  fixStarted,
+  type FixPreview,
+} from '../features/fix/fixSlice';
 import { draftPatched, planPatched, PLAN_DEBOUNCE_MS, type PlanState } from '../features/plan/planSlice';
 import {
   planRejected,
@@ -49,6 +57,27 @@ export function runPlan(api: SimApi, client: SimClient): void {
     planRevision: ticket.revision,
     datasetId: ticket.datasetId,
     task: 'simulate',
+    payload: planState.plan,
+  });
+}
+
+export function runFix(api: SimApi, client: SimClient): void {
+  const { plan: planState, dataset: datasetState } = stateOf(api);
+  const dataset = datasetState.dataset;
+  if (!dataset) return;
+
+  const ticket = { revision: planState.revision, datasetId: dataset.datasetId };
+  const error = validatePlan(planState.plan, dataset.sites, dataset.provenance.capabilities);
+  if (error) {
+    api.dispatch(fixRejected({ ...ticket, error }));
+    return;
+  }
+
+  api.dispatch(fixStarted({ ...ticket, fromStart: planState.plan.startIndex }));
+  client.send({
+    planRevision: ticket.revision,
+    datasetId: ticket.datasetId,
+    task: 'findNearestStart',
     payload: planState.plan,
   });
 }
@@ -115,6 +144,15 @@ export function routeResponse(dispatch: SimApi['dispatch']) {
       return;
     }
 
+    if (task === 'findNearestStart') {
+      if (response.status === 'ok') {
+        dispatch(fixReceived({ ...ticket, found: (response.payload ?? null) as FixPreview | null }));
+      } else if (response.error) {
+        dispatch(fixFailed({ ...ticket, error: response.error }));
+      }
+      return;
+    }
+
     if (task === 'calendar') {
       if (response.status === 'ok') {
         dispatch(calendarReceived({ ...ticket, cells: response.payload as CalendarCell[] }));
@@ -132,6 +170,13 @@ export function routeResponse(dispatch: SimApi['dispatch']) {
 
 export function createSimListener(client: SimClient) {
   const middleware = createListenerMiddleware();
+
+  middleware.startListening({
+    actionCreator: fixSearchRequested,
+    effect: (_action, api) => {
+      runFix(api, client);
+    },
+  });
 
   middleware.startListening({
     actionCreator: datasetActivated,

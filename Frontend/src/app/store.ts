@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { useDispatch, useSelector, type TypedUseSelectorHook } from 'react-redux';
 import { calendarReducer } from '../features/calendar/calendarSlice';
 import { datasetReducer } from '../features/datasets/datasetSlice';
+import { fixReducer } from '../features/fix/fixSlice';
 import { planReducer } from '../features/plan/planSlice';
 import { resultReducer } from '../features/result/resultSlice';
 import { viewReducer } from '../features/timeline/viewSlice';
@@ -16,6 +17,7 @@ export function makeStore(client: SimClient = createSimClient()) {
     reducer: {
       dataset: datasetReducer,
       calendar: calendarReducer,
+      fix: fixReducer,
       plan: planReducer,
       result: resultReducer,
       view: viewReducer,
