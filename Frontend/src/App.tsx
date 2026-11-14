@@ -1,3 +1,4 @@
+import { Calendar } from './features/calendar';
 import { DataState, DataStatusBar, useDataset } from './features/datasets';
 import { MissionPanel } from './features/plan';
 import { Verdict } from './features/result';
@@ -32,6 +33,7 @@ export function App() {
           <Scene />
           <Timeline />
           <WhyPanel />
+          <Calendar />
         </>
       }
     />
