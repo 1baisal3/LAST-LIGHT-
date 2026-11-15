@@ -13,6 +13,7 @@ import { BlackoutToggle } from './BlackoutToggle';
 import { DateField } from './DateField';
 import { DurationNote } from './DurationNote';
 import styles from './MissionPanel.module.css';
+import { PointSiteForm } from './PointSiteForm';
 import { SiteCard } from './SiteCard';
 
 function mastOptions(site: Site): MastOption[] {
@@ -103,6 +104,8 @@ function MissionForm({ dataset }: { dataset: Dataset }) {
           />
         ))}
       </fieldset>
+
+      <PointSiteForm dataset={dataset} />
 
       <div className={styles.group}>
         <DateField

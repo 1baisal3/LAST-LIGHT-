@@ -294,6 +294,19 @@ export const ru = {
   'report.colReport': 'Протокол',
   'report.empty': 'Нет проверок с таким статусом',
   'report.notRun': 'не выполнялась',
+  'plan.pointTitle': 'Своя точка по координатам',
+  'plan.pointName': 'Своя точка',
+  'plan.pointLat': 'Широта',
+  'plan.pointLon': 'Долгота',
+  'plan.pointSubmit': 'Рассчитать точку',
+  'plan.pointLoading': 'Сервер считает точку…',
+  'plan.pointBad': 'Широта от −90 до 90°, долгота от −180 до 180°.',
+  'plan.pointCoverage': 'Точка вне покрытия карты рельефа.',
+  'plan.pointNoRelease': 'На сервере нет текущего набора данных.',
+  'plan.pointServer': 'Сервер не смог рассчитать точку. Попробуйте позже.',
+  'plan.pointSynthetic': 'Геометрия точки посчитана демо-моделью сервера (synthetic-v1): не JPL Horizons и не карта LOLA.',
+  'plan.pointExternal': 'Геометрия точки: JPL Horizons и рельеф LOLA.',
+  'plan.pointHint': 'Юг — отрицательная широта, запад — отрицательная долгота. Точка появится третьей площадкой.',
 } as const;
 
 export type MessageKey = keyof typeof ru;
