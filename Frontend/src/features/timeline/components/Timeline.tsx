@@ -1,5 +1,5 @@
 import type { KeyboardEvent } from 'react';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../app/store';
 import { getLang, t } from '../../../shared/i18n';
 import { formatUtc } from '../../../shared/lib/format';
@@ -15,6 +15,7 @@ import {
 } from '../viewSlice';
 import styles from './Timeline.module.css';
 import { TimelineControls } from './TimelineControls';
+import { TimelineTable } from './TimelineTable';
 import { TimelineTracks } from './TimelineTracks';
 
 export function Timeline() {
@@ -25,6 +26,7 @@ export function Timeline() {
   const plan = useAppSelector((state) => state.plan.plan);
   const windowStart = useAppSelector((state) => state.dataset.dataset?.sites.window.start ?? null);
   const view = useAppSelector((state) => state.view);
+  const [asTable, setAsTable] = useState(false);
 
   const onTick = useCallback(() => dispatch(playTicked()), [dispatch]);
   usePlayback(view.playing && result !== null, view.speed, onTick);
@@ -66,15 +68,34 @@ export function Timeline() {
             {t('timeline.recalculating', lang)}
           </span>
         ) : null}
+        <button
+          type="button"
+          className={styles.viewToggle}
+          aria-pressed={asTable}
+          onClick={() => setAsTable((value) => !value)}
+        >
+          {t(asTable ? 'timeline.showChart' : 'timeline.showTable', lang)}
+        </button>
       </header>
 
       <div className={recalculating ? styles.stale : undefined}>
-        <TimelineTracks
-          result={result}
-          initialPct={plan.initialPct}
-          minPct={plan.minPct}
-          position={position}
-        />
+        {asTable ? (
+          <TimelineTable
+            result={result}
+            initialPct={plan.initialPct}
+            position={position}
+            windowStart={windowStart}
+            startIndex={plan.startIndex}
+            lang={lang}
+          />
+        ) : (
+          <TimelineTracks
+            result={result}
+            initialPct={plan.initialPct}
+            minPct={plan.minPct}
+            position={position}
+          />
+        )}
       </div>
 
       <TimelineControls
