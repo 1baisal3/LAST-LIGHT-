@@ -11,11 +11,14 @@ import { planReducer } from '../features/plan/planSlice';
 import { resultReducer } from '../features/result/resultSlice';
 import { viewReducer } from '../features/timeline/viewSlice';
 import { baseApi } from '../shared/api/baseApi';
+import { sessionReducer } from '../shared/api/session';
+import { createAccountListener } from './accountListener';
 import { createSimListener, routeResponse } from './listener';
 import { createSimClient, type SimClient } from './worker/client';
 
 export function makeStore(client: SimClient = createSimClient()) {
   const listener = createSimListener(client);
+  const account = createAccountListener();
 
   const store = configureStore({
     reducer: {
@@ -29,9 +32,10 @@ export function makeStore(client: SimClient = createSimClient()) {
       plan: planReducer,
       result: resultReducer,
       view: viewReducer,
+      session: sessionReducer,
       [baseApi.reducerPath]: baseApi.reducer,
     },
-    middleware: (getDefault) => getDefault().prepend(listener.middleware).concat(baseApi.middleware),
+    middleware: (getDefault) => getDefault().prepend(listener.middleware, account.middleware).concat(baseApi.middleware),
   });
 
   client.subscribe(routeResponse(store.dispatch));
