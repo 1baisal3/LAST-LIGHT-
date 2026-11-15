@@ -1,37 +1,29 @@
 # LAST LIGHT
 
-Сайт для хакатона NASA: **выдержит ли лунный аппарат у южного полюса 7 суток (168 ч)** — хватит ли света для панелей, заряда батареи и связи с Землёй.
-Пользователь выбирает площадку, дату и параметры аппарата → видит вердикт, таймлайн и три объяснения «почему».
+A website for the NASA hackathon: will a lunar lander survive 7 days (168 hours) at the South Pole — will there be enough light for the solar panels, battery charge, and communication with Earth? The user selects a landing site, date, and lander parameters → and gets a verdict, a timeline, and three explanations of "why.
+Status: framework. Folders, file stubs, and rules are ready; the logic is marked with TODO. See ARCHITECTURE.md for how everything is structured. [**ARCHITECTURE.md**](ARCHITECTURE.md).
 
-> Статус: **каркас**. Папки, заготовки файлов и правила готовы; логика помечена `TODO`.
-> Как всё устроено — [**ARCHITECTURE.md**](ARCHITECTURE.md).
-
-## Из чего состоит
-
-```text
+Structure
+ 
 LAST-LIGHT/
-├── Frontend/     сайт: React + TypeScript + Vite        → команда фронта
-└── backend/      сервер Django + данные NASA → команда бэка (код загружает бэкендер)
-```
+├── Frontend/     Website: React + TypeScript + Vite        → frontend team
+└── backend/      Server: Django + NASA data → backend team (code is uploaded by the backend developer)
 
-## Запуск
-
-**Бэкенд** — инструкция появится в `backend/README.md`, когда бэкендер загрузит код.
-
-**Фронтенд** (Node ≥ 22):
-
-```bash
+Getting Started
+ 
+Backend — instructions will appear in backend/README.md once the backend developer uploads the code.
+ 
+Frontend (Node ≥ 22):
 cd Frontend
 npm install
 npm run dev                       # http://localhost:5173
-```
 
-## Куда смотреть дальше
+Where to look next
 
-| Хочу… | Читать |
+| I want to… | Read |
 | --- | --- |
-| понять, как части связаны | [ARCHITECTURE.md](ARCHITECTURE.md) |
-| делать фронт | [Frontend/README.md](Frontend/README.md) |
-| делать бэкенд | папка `backend/` (заполняет бэкендер) и [ARCHITECTURE.md](ARCHITECTURE.md) |
-| правила веток и PR | [CONTRIBUTING.md](CONTRIBUTING.md) |
-| что решено и что ещё нет | [ARCHITECTURE.md, разделы 6–7](ARCHITECTURE.md#6-принятые-решения) |
+| understand how the parts connect | [ARCHITECTURE.md](ARCHITECTURE.md) |
+| work on the frontend | [Frontend/README.md](Frontend/README.md) |
+| work on the backend  | folder `backend/` (filled in by the backend developer) and [ARCHITECTURE.md](ARCHITECTURE.md) |
+| learn branch and PR | [CONTRIBUTING.md](CONTRIBUTING.md) |
+| see what's decided and what's pending  | [ARCHITECTURE.md, section 6–7](ARCHITECTURE.md#6-) |
