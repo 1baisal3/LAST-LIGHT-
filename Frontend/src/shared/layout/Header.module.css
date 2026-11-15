@@ -4,25 +4,38 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-2) var(--space-3);
-  padding: var(--space-3);
-  border-bottom: 1px solid var(--color-surface);
+  min-height: 72px;
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--color-line);
+  background: linear-gradient(90deg, rgb(28 14 72 / 0.92), rgb(12 5 34 / 0.92));
+  box-shadow: 0 1px 24px rgb(120 40 255 / 0.35);
+  backdrop-filter: blur(8px);
 }
 
 .brand {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
-  gap: var(--space-3);
+  gap: var(--space-1) var(--space-3);
+  min-width: 0;
 }
 
 .logo {
-  letter-spacing: 0.12em;
+  color: var(--color-accent);
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  white-space: nowrap;
+  text-shadow: 0 0 14px var(--color-accent);
 }
 
 .challenge,
 .mode,
 .passed {
   color: var(--color-muted);
-  font-size: 13px;
+  font-size: var(--fs-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .meta {

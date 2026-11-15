@@ -49,8 +49,16 @@ export function App() {
           <KpiRow />
           <Scene />
           <Timeline />
+        </>
+      }
+      aside={
+        <>
           <WhyPanel />
           <FixPanel />
+        </>
+      }
+      bottom={
+        <>
           <HorizonProfile />
           <Calendar />
           <RunHistory />
