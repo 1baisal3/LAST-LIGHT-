@@ -257,4 +257,9 @@ export const en: Record<MessageKey, string> = {
   'runs.renameNamed': 'Rename “{name}”',
   'runs.newName': 'New name',
   'runs.save': 'Save',
+  'share.copy': 'Copy link',
+  'share.copied': 'Link copied',
+  'share.inAddress': 'The link is in the address bar',
+  'share.broken': 'The plan link is broken; the default plan is shown',
+  'share.close': 'Close',
 };

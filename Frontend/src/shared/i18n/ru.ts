@@ -255,6 +255,11 @@ export const ru = {
   'runs.renameNamed': 'Переименовать «{name}»',
   'runs.newName': 'Новое название',
   'runs.save': 'Сохранить',
+  'share.copy': 'Скопировать ссылку',
+  'share.copied': 'Ссылка скопирована',
+  'share.inAddress': 'Ссылка в адресной строке',
+  'share.broken': 'Ссылка на план повреждена, показан план по умолчанию',
+  'share.close': 'Закрыть',
 } as const;
 
 export type MessageKey = keyof typeof ru;

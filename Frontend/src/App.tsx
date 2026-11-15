@@ -8,6 +8,7 @@ import { KpiRow, Verdict } from './features/result';
 import { Scene } from './features/scene';
 import { Timeline } from './features/timeline';
 import { RunHistory } from './features/runs';
+import { LinkNotice, ShareButton } from './features/share';
 import { WhyPanel } from './features/why';
 import { useLang } from './shared/i18n';
 import { AppShell } from './shared/layout/AppShell';
@@ -34,6 +35,7 @@ export function App() {
           status={
             <>
               <DataStatusBar dataset={data.dataset} />
+              <ShareButton />
               <AccountMenu />
             </>
           }
@@ -42,6 +44,7 @@ export function App() {
       side={<MissionPanel />}
       main={
         <>
+          <LinkNotice />
           <Verdict />
           <KpiRow />
           <Scene />

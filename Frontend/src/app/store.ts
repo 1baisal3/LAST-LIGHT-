@@ -13,12 +13,15 @@ import { viewReducer } from '../features/timeline/viewSlice';
 import { baseApi } from '../shared/api/baseApi';
 import { sessionReducer } from '../shared/api/session';
 import { createAccountListener } from './accountListener';
+import { createShareListener } from './shareListener';
+import { shareReducer } from '../features/share/shareSlice';
 import { createSimListener, routeResponse } from './listener';
 import { createSimClient, type SimClient } from './worker/client';
 
 export function makeStore(client: SimClient = createSimClient()) {
   const listener = createSimListener(client);
   const account = createAccountListener();
+  const share = createShareListener();
 
   const store = configureStore({
     reducer: {
@@ -33,9 +36,10 @@ export function makeStore(client: SimClient = createSimClient()) {
       result: resultReducer,
       view: viewReducer,
       session: sessionReducer,
+      share: shareReducer,
       [baseApi.reducerPath]: baseApi.reducer,
     },
-    middleware: (getDefault) => getDefault().prepend(listener.middleware, account.middleware).concat(baseApi.middleware),
+    middleware: (getDefault) => getDefault().prepend(listener.middleware, account.middleware, share.middleware).concat(baseApi.middleware),
   });
 
   client.subscribe(routeResponse(store.dispatch));
