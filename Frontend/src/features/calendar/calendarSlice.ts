@@ -1,6 +1,7 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { CalendarCell } from '../../sim/search';
 import type { PlanError } from '../../sim/validatePlan';
+import { datasetActivated } from '../datasets/datasetSlice';
 
 export interface CalendarState {
   status: 'idle' | 'running' | 'error';
@@ -66,6 +67,9 @@ const calendarSlice = createSlice({
       if (!isCurrent(state, action.payload)) return state;
       return { ...state, status: 'error', cells: [], key: null, error: action.payload.error };
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(datasetActivated, () => initialState);
   },
 });
 
