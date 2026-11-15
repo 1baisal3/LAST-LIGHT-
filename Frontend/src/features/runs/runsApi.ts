@@ -18,7 +18,11 @@ export const runsApi = baseApi.injectEndpoints({
       query: (id) => ({ url: `/runs/${id}/`, method: 'DELETE' }),
       invalidatesTags: ['Runs'],
     }),
+    renameRun: build.mutation<unknown, { id: number; name: string }>({
+      query: ({ id, name }) => ({ url: `/runs/${id}/`, method: 'PATCH', body: { name } }),
+      invalidatesTags: ['Runs'],
+    }),
   }),
 });
 
-export const { useListRunsQuery, useCreateRunMutation, useDeleteRunMutation } = runsApi;
+export const { useListRunsQuery, useCreateRunMutation, useDeleteRunMutation, useRenameRunMutation } = runsApi;

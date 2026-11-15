@@ -251,6 +251,10 @@ export const ru = {
   'runs.load': 'Загрузить план',
   'runs.delete': 'Удалить',
   'runs.deleteNamed': 'Удалить «{name}»',
+  'runs.rename': 'Переименовать',
+  'runs.renameNamed': 'Переименовать «{name}»',
+  'runs.newName': 'Новое название',
+  'runs.save': 'Сохранить',
 } as const;
 
 export type MessageKey = keyof typeof ru;

@@ -205,4 +205,36 @@ describe('history', () => {
     await waitFor(() => expect(within(region).queryByText('Чужой формат')).toBeNull());
     expect(server.runs.map((run) => run.id)).toEqual([90, 92]);
   });
+
+  it('renames a run, keeps the frozen data and cancels with Escape', async () => {
+    const server = fakeServer();
+    server.addUser('ada');
+    server.runs.push({
+      id: 70,
+      user: 'ada',
+      name: 'Старое имя',
+      created_at: '2026-11-14T08:00:00Z',
+      results: runPayload('Старое имя', 'fixture-mini-2x200', DEFAULT_PLAN, demoResult()).results,
+    });
+    const store = setup();
+    act(() => {
+      store.dispatch(loggedIn({ username: 'ada', ...server.issue('ada') }));
+    });
+    const region = await screen.findByRole('region', { name: 'История расчётов' });
+    await within(region).findByText('Старое имя');
+
+    fireEvent.click(within(region).getByRole('button', { name: 'Переименовать «Старое имя»' }));
+    const input = within(region).getByRole('textbox', { name: 'Новое название' });
+    fireEvent.change(input, { target: { value: 'Черновик' } });
+    fireEvent.keyDown(input, { key: 'Escape' });
+    expect(within(region).getByText('Старое имя')).toBeTruthy();
+
+    fireEvent.click(within(region).getByRole('button', { name: 'Переименовать «Старое имя»' }));
+    fireEvent.change(within(region).getByRole('textbox', { name: 'Новое название' }), { target: { value: '  Южный полюс  ' } });
+    fireEvent.click(within(region).getByRole('button', { name: 'Сохранить' }));
+    await within(region).findByText('Южный полюс');
+    const patch = server.calls.find((call) => call.method === 'PATCH');
+    expect(patch).toMatchObject({ path: '/runs/70/', body: { name: 'Южный полюс' } });
+    expect(readFrozen(server.runs[0]!.results)).not.toBeNull();
+  });
 });

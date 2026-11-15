@@ -253,4 +253,8 @@ export const en: Record<MessageKey, string> = {
   'runs.load': 'Load plan',
   'runs.delete': 'Delete',
   'runs.deleteNamed': 'Delete “{name}”',
+  'runs.rename': 'Rename',
+  'runs.renameNamed': 'Rename “{name}”',
+  'runs.newName': 'New name',
+  'runs.save': 'Save',
 };

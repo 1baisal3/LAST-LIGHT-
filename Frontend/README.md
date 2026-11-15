@@ -10,6 +10,18 @@ npm test            # тесты
 npm run build       # сборка в dist/
 ```
 
+## Источник данных
+
+`VITE_DATA_SOURCE=demo` (по умолчанию) — встроенный демо-набор, сервер не нужен.
+`VITE_DATA_SOURCE=api` — набор с сервера `GET /api/datasets/latest/`; вход и история запусков работают в обоих режимах, если запущен Django.
+
+Запуск вместе с бэкендом:
+
+```bash
+cd backend && python manage.py migrate && python manage.py load_release --demo && python manage.py runserver
+cd Frontend && VITE_DATA_SOURCE=api npm run dev
+```
+
 ## Структура
 
 ```text

@@ -82,6 +82,12 @@ export function fakeServer() {
       return json(201, run);
     }
     const match = /^\/runs\/(\d+)\/$/.exec(path);
+    if (match && request.method === 'PATCH') {
+      const run = runs.find((item) => item.id === Number(match[1]) && item.user === owner);
+      if (!run) return json(404, { detail: 'Not found.' });
+      if (typeof data.name === 'string') run.name = data.name;
+      return json(200, run);
+    }
     if (match && request.method === 'DELETE') {
       const index = runs.findIndex((run) => run.id === Number(match[1]) && run.user === owner);
       if (index < 0) return json(404, { detail: 'Not found.' });
