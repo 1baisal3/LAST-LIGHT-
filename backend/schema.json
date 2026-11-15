@@ -175,6 +175,100 @@
                 }
             }
         },
+        "/api/datasets/{dataset_id}/point/": {
+            "get": {
+                "operationId": "api_datasets_point_retrieve",
+                "description": "A site for arbitrary coordinates in the frontend contract, aligned to the window of the given release: horizon profiles for 2, 5 and 10 m masts every 10 degrees and hourly Sun and Earth geometry. dataMode tells whether JPL Horizons and LOLA or the synthetic-v1 demo providers were used.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "dataset_id",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Datasets"
+                ],
+                "security": [
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "description": "lat must be in [-90, 90] and lon in [-180, 180]."
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "description": "Unknown datasetId."
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "description": "The point is outside the terrain coverage."
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "502": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "description": "Ephemeris source failed or returned an invalid window."
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "503": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "description": "Terrain source is not configured."
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "504": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "description": "Ephemeris source timed out."
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/datasets/latest/": {
             "get": {
                 "operationId": "api_datasets_latest_retrieve",
