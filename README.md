@@ -6,6 +6,7 @@ Status: framework. Folders, file stubs, and rules are ready; the logic is marked
 Structure
  
 LAST-LIGHT/
+
 ├── Frontend/     Website: React + TypeScript + Vite        → frontend team
 └── backend/      Server: Django + NASA data → backend team (code is uploaded by the backend developer)
 
