@@ -22,6 +22,24 @@ venv/bin/python manage.py runserver 127.0.0.1:8000
 
 Документация доступна без авторизации. Для запросов к API нужен JWT Bearer token.
 
+## Набор данных для сайта
+
+Сайт считает физику в браузере и берёт данные из `GET /api/datasets/latest/`
+(или `GET /api/datasets/<datasetId>/`): `sites`, `provenance` и `validation` в
+контракте фронтенда. Эндпоинты открыты без входа.
+
+```sh
+venv/bin/python manage.py load_release --demo              # встроенный демо-набор
+venv/bin/python manage.py load_release path/to/release      # sites.json, provenance.json, validation.json
+venv/bin/python manage.py load_release path/to/release --replace
+```
+
+Набор проверяется теми же правилами, что и на фронтенде (`releases/contract.py`);
+при ошибке команда печатает список проблем и ничего не сохраняет.
+
+История запусков: `PATCH /api/runs/{id}/` переименовывает запись (меняется только
+`name`), у пользователя хранятся 50 последних записей.
+
 ## Проверка
 
 ```sh

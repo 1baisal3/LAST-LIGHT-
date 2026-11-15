@@ -131,6 +131,84 @@
                 }
             }
         },
+        "/api/datasets/{dataset_id}/": {
+            "get": {
+                "operationId": "api_datasets_retrieve",
+                "description": "A data release by datasetId.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "dataset_id",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Datasets"
+                ],
+                "security": [
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "description": "Unknown datasetId."
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/datasets/latest/": {
+            "get": {
+                "operationId": "api_datasets_latest_retrieve",
+                "description": "The most recently loaded data release: sites, provenance and validation in the frontend contract.",
+                "tags": [
+                    "Datasets"
+                ],
+                "security": [
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "description": "No data release has been loaded."
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/mission/": {
             "post": {
                 "operationId": "api_mission_create",
@@ -489,6 +567,60 @@
                     }
                 }
             },
+            "patch": {
+                "operationId": "api_runs_partial_update",
+                "description": "Rename an owned scenario; only name can change.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "A unique integer value identifying this saved scenario.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Runs"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedSavedScenarioRenameRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedSavedScenarioRenameRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedSavedScenarioRenameRequest"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwtAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SavedScenarioRename"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
             "delete": {
                 "operationId": "api_runs_destroy",
                 "description": "Delete an owned scenario; foreign IDs return 404.",
@@ -637,6 +769,60 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/SavedScenario"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "patch": {
+                "operationId": "api_scenarios_partial_update",
+                "description": "Rename an owned scenario; only name can change.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "A unique integer value identifying this saved scenario.",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Runs"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedSavedScenarioRenameRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedSavedScenarioRenameRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedSavedScenarioRenameRequest"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwtAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SavedScenarioRename"
                                 }
                             }
                         },
@@ -1261,6 +1447,15 @@
                     }
                 }
             },
+            "PatchedSavedScenarioRenameRequest": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255
+                    }
+                }
+            },
             "RecoveryCandidate": {
                 "type": "object",
                 "properties": {
@@ -1490,6 +1685,62 @@
                     "id",
                     "mast_height_m",
                     "user"
+                ]
+            },
+            "SavedScenarioRename": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "user": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "battery_capacity_wh": {
+                        "type": "number",
+                        "format": "double",
+                        "readOnly": true,
+                        "description": "Battery capacity in watt-hours."
+                    },
+                    "initial_charge_percent": {
+                        "type": "number",
+                        "format": "double",
+                        "readOnly": true
+                    },
+                    "mast_height_m": {
+                        "type": "number",
+                        "format": "double",
+                        "readOnly": true,
+                        "description": "Mast height in metres."
+                    },
+                    "worst_case_mode": {
+                        "type": "boolean",
+                        "readOnly": true
+                    },
+                    "results": {
+                        "readOnly": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "battery_capacity_wh",
+                    "created_at",
+                    "id",
+                    "initial_charge_percent",
+                    "mast_height_m",
+                    "results",
+                    "user",
+                    "worst_case_mode"
                 ]
             },
             "SavedScenarioRequest": {
