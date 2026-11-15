@@ -137,6 +137,9 @@ const validationSchema = z.strictObject({
         name: z.string(),
         status: z.enum(['pending', 'passed', 'failed']),
         ranAt: utcTime.nullable(),
+        measurement: z.string().nullable().optional(),
+        tolerance: z.string().nullable().optional(),
+        report: z.string().nullable().optional(),
       }),
     )
     .superRefine((checks, ctx) => {

@@ -24,6 +24,9 @@ export interface ValidationCheck {
   name: string;
   status: 'pending' | 'passed' | 'failed';
   ranAt: string | null;
+  measurement?: string | null;
+  tolerance?: string | null;
+  report?: string | null;
 }
 
 export interface Validation {

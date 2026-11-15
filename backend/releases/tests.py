@@ -73,6 +73,15 @@ class ContractTests(TestCase):
             f['validation']['checks'][0]['status'] = 'passed'
         self.assertIn('validation.checks[0].ranAt: a passed check must have ranAt', self.broken(passed))
 
+    def test_report_fields_are_optional_strings(self):
+        files = copy.deepcopy(self.files)
+        files['validation']['checks'][0].update(measurement='0.02°', tolerance='≤ 0.1°', report=None)
+        validate_release(files['sites'], files['provenance'], files['validation'])
+
+        def numeric(f):
+            f['validation']['checks'][0]['tolerance'] = 0.1
+        self.assertIn('validation.checks[0].tolerance: must be a string or null', self.broken(numeric))
+
 
 class LoadReleaseTests(TestCase):
     def test_loads_the_demo_and_refuses_a_duplicate_without_replace(self):

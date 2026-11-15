@@ -177,7 +177,7 @@ def _check_validation(validation, issues):
         return
     for index, check in enumerate(validation['checks']):
         path = f'validation.checks[{index}]'
-        if not _exact_keys(check, ('level', 'name', 'status', 'ranAt'), (), path, issues):
+        if not _exact_keys(check, ('level', 'name', 'status', 'ranAt'), ('measurement', 'tolerance', 'report'), path, issues):
             continue
         if check['level'] not in (1, 2, 3, 4) or isinstance(check['level'], bool):
             issues.append(f'{path}.level: must be 1, 2, 3 or 4')
@@ -187,6 +187,9 @@ def _check_validation(validation, issues):
             issues.append(f'{path}.status: must be pending, passed or failed')
         if check['ranAt'] is not None and _parse_utc(check['ranAt']) is None:
             issues.append(f'{path}.ranAt: must be an ISO 8601 UTC time ending with Z or null')
+        for key in ('measurement', 'tolerance', 'report'):
+            if key in check and check[key] is not None and not isinstance(check[key], str):
+                issues.append(f'{path}.{key}: must be a string or null')
         if check['status'] == 'passed' and check['ranAt'] is None:
             issues.append(f'{path}.ranAt: a passed check must have ranAt')
 
