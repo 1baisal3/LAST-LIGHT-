@@ -10,11 +10,12 @@ interface Props {
   provenance: Provenance | null;
   validation: Validation | null;
   returnFocusTo?: RefObject<HTMLElement | null>;
+  onOpenReport?: () => void;
 }
 
 const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-export function SourcesDrawer({ open, onClose, provenance, validation, returnFocusTo }: Props) {
+export function SourcesDrawer({ open, onClose, provenance, validation, returnFocusTo, onOpenReport }: Props) {
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
 
@@ -103,6 +104,11 @@ export function SourcesDrawer({ open, onClose, provenance, validation, returnFoc
             </li>
           ))}
         </ul>
+        {onOpenReport ? (
+          <button type="button" className={styles.close} onClick={onOpenReport}>
+            {t('report.open')}
+          </button>
+        ) : null}
 
         <p className={styles.muted}>{t('shell.disclaimer')}</p>
       </div>

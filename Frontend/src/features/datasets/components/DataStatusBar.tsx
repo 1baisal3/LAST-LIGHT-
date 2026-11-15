@@ -4,6 +4,7 @@ import type { Dataset } from '../types';
 import styles from './DataStatusBar.module.css';
 import { DemoBadge } from './DemoBadge';
 import { SourcesDrawer } from './SourcesDrawer';
+import { ValidationReport } from './ValidationReport';
 
 interface Props {
   dataset: Dataset;
@@ -15,6 +16,7 @@ export function passedChecks(dataset: Dataset): number {
 
 export function DataStatusBar({ dataset }: Props) {
   const [open, setOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const total = dataset.validation.checks.length;
 
@@ -40,7 +42,20 @@ export function DataStatusBar({ dataset }: Props) {
         provenance={dataset.provenance}
         validation={dataset.validation}
         returnFocusTo={triggerRef}
+        onOpenReport={() => {
+          setOpen(false);
+          setReportOpen(true);
+        }}
       />
+      {reportOpen ? (
+        <ValidationReport
+          dataset={dataset}
+          onClose={() => {
+            setReportOpen(false);
+            triggerRef.current?.focus();
+          }}
+        />
+      ) : null}
     </div>
   );
 }
