@@ -1,6 +1,5 @@
 """Immutable dataset registration and content-addressed ephemeris storage."""
 
-import fcntl
 import hashlib
 import hmac
 import json
@@ -10,9 +9,37 @@ import tempfile
 from contextlib import contextmanager
 from pathlib import Path
 
+try:
+    import fcntl
+except ImportError:
+    fcntl = None
+    import msvcrt
+
+
+def _lock(stream):
+    if fcntl is not None:
+        fcntl.flock(stream.fileno(), fcntl.LOCK_EX)
+        return
+    stream.seek(0)
+    msvcrt.locking(stream.fileno(), msvcrt.LK_LOCK, 1)
+
+
+def _unlock(stream):
+    if fcntl is not None:
+        fcntl.flock(stream.fileno(), fcntl.LOCK_UN)
+        return
+    stream.seek(0)
+    msvcrt.locking(stream.fileno(), msvcrt.LK_UNLCK, 1)
+
 
 class DatasetIntegrityError(Exception):
     pass
+
+
+def _signature(stat):
+    if os.name == 'nt':
+        return (stat.st_size, stat.st_mtime_ns)
+    return (stat.st_dev, stat.st_ino, stat.st_size, stat.st_mtime_ns, stat.st_ctime_ns)
 
 
 def sha256_file(path):
@@ -22,7 +49,7 @@ def sha256_file(path):
             digest = hashlib.file_digest(stream, 'sha256').hexdigest()
             after = os.fstat(stream.fileno())
             current = Path(path).stat()
-            signature = lambda stat: (stat.st_dev, stat.st_ino, stat.st_size, stat.st_mtime_ns, stat.st_ctime_ns)
+            signature = _signature
             if signature(before) != signature(after) or signature(after) != signature(current):
                 raise DatasetIntegrityError('Dataset changed while its SHA-256 was being calculated.')
             return digest
@@ -45,12 +72,12 @@ def _read_manifest(path):
 @contextmanager
 def _manifest_lock(path):
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.with_suffix(path.suffix + '.lock').open('a') as lock:
-        fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+    with path.with_suffix(path.suffix + '.lock').open('a+') as lock:
+        _lock(lock)
         try:
             yield
         finally:
-            fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
+            _unlock(lock)
 
 
 def _atomic_json(path, payload):
