@@ -1,0 +1,29 @@
+{
+  "datasetId": "fixture-mini-2x200",
+  "checks": [
+    {
+      "level": 1,
+      "name": "schema",
+      "status": "pending",
+      "ranAt": null
+    },
+    {
+      "level": 2,
+      "name": "geometry",
+      "status": "pending",
+      "ranAt": null
+    },
+    {
+      "level": 3,
+      "name": "ephemeris",
+      "status": "pending",
+      "ranAt": null
+    },
+    {
+      "level": 4,
+      "name": "reference",
+      "status": "pending",
+      "ranAt": null
+    }
+  ]
+}

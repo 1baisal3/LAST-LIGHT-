@@ -1,0 +1,11 @@
+{
+  "datasetId": "fixture-mini-2x200",
+  "mode": "demo",
+  "sources": [],
+  "capabilities": {
+    "minCapacity": false,
+    "heater": false,
+    "uncertainty": false
+  },
+  "notes": "Тестовая фикстура с известными ответами; не описывает реальную Луну"
+}

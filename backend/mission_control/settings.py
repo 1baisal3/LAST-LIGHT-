@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "mission.apps.MissionConfig",
     "runs.apps.RunsConfig",
     "datasets.apps.DatasetsConfig",
+    "releases.apps.ReleasesConfig",
     "drf_spectacular",
 ]
 
