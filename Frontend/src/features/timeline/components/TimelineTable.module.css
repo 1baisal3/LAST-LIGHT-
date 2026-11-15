@@ -33,7 +33,7 @@
 
 .current {
   background: var(--color-bg);
-  outline: 1px solid var(--color-sun);
+  outline: 1px solid var(--color-accent);
 }
 
 .fail {

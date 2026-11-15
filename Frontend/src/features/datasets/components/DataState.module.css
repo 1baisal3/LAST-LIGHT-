@@ -2,8 +2,10 @@
   display: grid;
   gap: var(--space-3);
   padding: var(--space-4);
-  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  background: var(--panel-bg);
   border-radius: var(--radius);
+  box-shadow: var(--panel-shadow);
 }
 
 .title {
@@ -47,7 +49,7 @@
 }
 
 .retry:focus-visible {
-  outline: 2px solid var(--color-sun);
+  outline: 2px solid var(--color-focus);
   outline-offset: 2px;
 }
 

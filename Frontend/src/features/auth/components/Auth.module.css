@@ -30,8 +30,10 @@
   width: min(360px, 100%);
   padding: var(--space-4);
   border-radius: var(--radius);
-  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  background: var(--panel-bg);
   color: var(--color-text);
+  box-shadow: var(--panel-shadow);
 }
 
 .title {
@@ -92,10 +94,11 @@
 }
 
 .primary {
-  border: 1px solid var(--color-sun);
-  background: var(--color-sun);
-  color: var(--color-bg);
-  font-weight: 600;
+  border: 1px solid var(--color-accent);
+  background: var(--button-bg);
+  color: #fff;
+  font-weight: 650;
+  box-shadow: var(--glow);
 }
 
 .primary:disabled {
@@ -128,6 +131,6 @@
 .secondary:focus-visible,
 .link:focus-visible,
 .field input:focus-visible {
-  outline: 2px solid var(--color-sun);
+  outline: 2px solid var(--color-focus);
   outline-offset: 2px;
 }

@@ -19,8 +19,8 @@
 }
 
 .selected {
-  border-color: var(--color-sun);
-  box-shadow: inset 3px 0 0 var(--color-sun);
+  border-color: var(--color-accent);
+  box-shadow: inset 3px 0 0 var(--color-accent);
 }
 
 .name {

@@ -15,7 +15,7 @@
   width: 20px;
   height: 20px;
   margin: 0;
-  accent-color: var(--color-sun);
+  accent-color: var(--color-accent);
 }
 
 .checkbox:focus-visible {

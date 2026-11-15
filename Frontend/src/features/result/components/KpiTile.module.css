@@ -19,18 +19,20 @@
 }
 
 .number {
+  color: var(--color-num);
   font-family: var(--font-num);
   font-size: var(--fs-xl);
   font-weight: 700;
   white-space: nowrap;
+  text-shadow: var(--num-glow);
 }
 
 .failed {
-  box-shadow: inset 3px 0 0 var(--color-fail);
+  box-shadow: inset 3px 0 0 var(--color-warn);
 }
 
 .failed .number {
-  color: var(--color-fail);
+  text-shadow: 0 0 22px var(--color-num);
 }
 
 .flag {
