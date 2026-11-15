@@ -87,10 +87,34 @@ class SavedScenarioAPITests(APITestCase):
         self.assertEqual(self.client.delete(detail).status_code, 204)
         self.assertFalse(SavedScenario.objects.filter(pk=self.own.pk).exists())
 
-    def test_updates_are_disabled(self):
+    def test_patch_renames_only_and_put_is_disabled(self):
         detail = reverse('scenario-detail', args=[self.own.pk])
-        self.assertEqual(self.client.patch(detail, {'name': 'Changed'}).status_code, 405)
+        response = self.client.patch(detail, {'name': 'Changed', 'battery_capacity_wh': 1, 'results': {'x': 1}}, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.own.refresh_from_db()
+        self.assertEqual(self.own.name, 'Changed')
+        self.assertEqual(self.own.battery_capacity_wh, 1000)
+        self.assertEqual(self.own.results, {})
         self.assertEqual(self.client.put(detail, self.payload, format='json').status_code, 405)
+
+    def test_foreign_scenario_cannot_be_renamed(self):
+        detail = reverse('scenario-detail', args=[self.foreign.pk])
+        self.assertEqual(self.client.patch(detail, {'name': 'Mine'}, format='json').status_code, 404)
+        self.foreign.refresh_from_db()
+        self.assertEqual(self.foreign.name, '')
+
+    def test_history_keeps_the_newest_50_records_per_user(self):
+        SavedScenario.objects.bulk_create([
+            SavedScenario(user=self.user, battery_capacity_wh=100, mast_height_m=1)
+            for _ in range(49)
+        ])
+        response = self.client.post(self.url, self.payload, format='json')
+        self.assertEqual(response.status_code, 201)
+        own = SavedScenario.objects.filter(user=self.user)
+        self.assertEqual(own.count(), 50)
+        self.assertFalse(own.filter(pk=self.own.pk).exists())
+        self.assertTrue(own.filter(pk=response.data['id']).exists())
+        self.assertTrue(SavedScenario.objects.filter(pk=self.foreign.pk).exists())
 
     def test_invalid_parameters_are_rejected(self):
         for field, value in (
